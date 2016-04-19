@@ -1,0 +1,59 @@
+a{
+	margin-right: 1%;
+	margin-left: 1%;
+}
+
+.canvasDiv{
+	position: relative;
+	width: 640px;
+	margin: 0 auto;
+}
+
+canvas{
+	z-index: -1;
+	margin: 0 auto;
+	background-color: black;
+	padding: 0%;
+}
+
+#createRoom, #joinRoom, #instructions{
+	margin: 0px auto;
+	border: 2px solid #ddd;
+	background-color: black;
+	color: #ddd;
+	position: absolute;
+	width: 20%;
+	height: 50px;
+	padding: 10px 5px;
+	top: 40%;
+	left: 40%;
+}
+
+#joinRoom{
+	top: 50%;
+}
+
+#instructions{
+	top: 60%;
+}
+
+#createRoom:hover, #joinRoom:hover, #instructions:hover{
+	border-color: red;
+}
+
+#createRoom:active, #joinRoom:active, #instructions:active{
+	background-color: #ddd;
+}
+
+
+.record{
+	width: 75%;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	margin-top: 1%;
+	background-color: lightgray;
+	margin-right: auto;
+	margin-left: auto;
+}

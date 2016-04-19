@@ -1,0 +1,42 @@
+extends ./index.jade
+block append style
+  link(rel="stylesheet", type="text/css", href="/assets/style.css")
+block body
+  h1 Game Page
+  a(href="/highscore") Score Board
+  if !user
+    a(href="/signup") Sign up
+    section#login
+      form#loginForm(class="mainForm", name="loginForm", action="/login", method="POST")
+        label(for="username") Username: 
+        input#user(type="text", name="username", placeholder="username")
+        label(for="pass") Password: 
+        input#pass(type="password", name="pass", placeholder="password")
+        input(type="hidden", name="_csrf", value="#{csrfToken}")
+        a#loginSubmit(class="formSubmit", href="#") Sign in
+    .canvasDiv
+      canvas(width="640px" height="640px")
+      button#createRoom Create Room
+      button#joinRoom Join Room
+      button#instructions Instructions
+    p#highScore 0
+    p#currentScore 0
+    input#score(type="hidden", name="score")
+    p Login to be able to submit highscore
+  else
+    div
+      h3#user Welcome, #{user}
+      a(href="/record") Your Records
+      a(href="/logout") Logout
+    .canvasDiv
+      canvas(width="500px" height="500px")
+    p#highScore 0
+    p#currentScore 0
+    form#recordForm(class="mainForm", name="recordForm", action="/record", method="POST")
+      input#score(type="hidden", name="score")
+      input(type="hidden", name="_csrf", value="#{csrfToken}")
+      a#recordSubmit(class="formSubmit", href="#") Submit highscore
+      p#success
+block scripts
+  script(src="/socket.io/socket.io.js")
+  script(src="/assets/game.js")

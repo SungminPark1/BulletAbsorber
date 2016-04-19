@@ -1,0 +1,17 @@
+extends ./index.jade
+block append style
+  link(rel="stylesheet", type="text/css", href="/assets/style.css")
+block body
+  h1 Highscores Page
+  a(href="/") Game
+  a(href="/logout") Logout
+
+  section#record
+    if !records || records.length == 0
+      div.record
+        h3 No Records Yet
+    else
+      each val in records
+        div.record
+          h3.user User: #{val.user}
+          p.score Score: #{val.score}
