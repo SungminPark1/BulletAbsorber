@@ -10,17 +10,42 @@ var onJoined = function(socket, io) {
 	});
 
 	socket.on('createRoom', function(data){
-		socket.leave('lobby');
-		socket.join(data.room);
-		socket.room = data.room;
-		gameRooms[data.room] = game;
-		gameRooms[data.room].createRoom(socket, data, io);
+		if(!gameRooms[data.room]){
+			socket.leave('lobby');
+			socket.join(data.room);
+			socket.room = data.room;
+
+			gameRooms[data.room] = game.createGame(data.room);
+			gameRooms[data.room].addPlayer(data.player);
+			
+			// emit data back
+			io.sockets.in(data.room).emit('updateData', {
+				room: data.room,
+				players: gameRooms[socket.room].players,
+				arrayBullets: gameRooms[socket.room].arrayBullets,
+				started: gameRooms[socket.room].started
+			});
+		}
+		else{
+			console.log('room already exists');
+		}
 	});
 
 	socket.on('joinRoom', function(data, io){
-		if(gameRooms[data.room] !== null){
+		if(gameRooms[data.room]){
+			socket.leave('lobby');
+			socket.join(data.room);
 			socket.room = data.room;
-			gameRooms[data.room].addPlayer(data);
+
+			gameRooms[data.room].addPlayer(data.player);
+
+
+			socket.emit('updateData', {
+				room: data.room,
+				players: gameRooms[socket.room].players,
+				arrayBullets: gameRooms[socket.room].arrayBullets,
+				started: gameRooms[socket.room].started
+			});
 		}
 		else{
 			// send error message
@@ -35,7 +60,14 @@ var onMsg = function(socket, io) {
 	});
 
 	socket.on('updatePlayer', function(data){
-		gameRooms[socket.room].updatePlayers(data, io);
+		gameRooms[socket.room].updatePlayers(data);
+
+		// emit data back 
+		// TEMP
+		io.sockets.in(socket.room).emit('update', {
+			players: gameRooms[socket.room].players,
+			arrayBullets: gameRooms[socket.room].arrayBullets
+		});
 	});
 };
 
@@ -43,13 +75,19 @@ var onDisconnect = function(socket, io) {
 	socket.on('disconnect', function(){
 		// find the disconnected players room and deleted the player
 		if(socket.room != 'lobby'){
-			var keys = Object.keys(gameRooms);
+			var keys = Object.keys(gameRooms); //get the keys of the game rooms
 
 			for(var i = 0; i < keys.length; i++){
-				var room = gameRooms[keys[i]];
+				var game = gameRooms[keys[i]];
 
-				if(room = socket.room){
-					gameRooms[room].deletePlayer(socket.name, io);
+				// check if the game's room matches the socket's room
+				if(game.room == socket.room){
+					gameRooms[game.room].deletePlayer(socket.name);
+
+					// deletes room if no players exist in it
+					if(Object.keys(game.players) == 0){
+						delete gameRooms[keys[i]];
+					}
 				}
 			}
 		}

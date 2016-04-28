@@ -4,15 +4,49 @@ var enemies;
 // TO DO
 // Grid for collisions 10x10 grid?
 
-var room, io, started;
+function createGame(data){
+	var game = {
+		room: data,
+		started: false,
+		players: {},
+		arrayBullets: [],
+		time: new Date().getTime(),
+		addPlayer: function(player){
+			this.players[player.name] = player;
+		},
+		deletePlayer: function(player){
+			delete this.players[player];
+			console.log(player + " deleted");
+		},
+		updatePlayers: function(player){
+			this.players[player.name].pos = player.pos;
+		},
+		startGame: function(){
+
+		},
+		update: function(){
+
+		}
+	};
+
+	return game;
+}
+
+module.exports = {
+	createGame: createGame
+};
+
+
+/*
+var room, started;
 var players = {}; //holdes player object: *name, hp, energy, *pos, *color, *radius, *hit, *score, ready
 var arrayBullets = [];
 var time = new Date().getTime();
 
-var createRoom = function(socket, data, io){
+// create a new room
+var createRoom = function(data, io){
 	room = data.room;
 	players[data.player.name] = data.player;
-	io = io;
 	started = false;
 
 	// emit data back
@@ -24,10 +58,17 @@ var createRoom = function(socket, data, io){
 	});
 };
 
+// add a player to an existing room
 var addPlayer = function(data , io){
 	players[data.player.name] = data.player;
 
 	// emit new room data back
+	io.sockets.in(room).emit('updateData', {
+		room: room,
+		players: players,
+		arrayBullets: arrayBullets,
+		started: started
+	});
 };
 
 var deletePlayer = function(name, io){
@@ -133,3 +174,4 @@ module.exports.deletePlayer = deletePlayer;
 module.exports.updatePlayers = updatePlayers;
 module.exports.gameStarted = gameStarted;
 module.exports.update = update;
+*/

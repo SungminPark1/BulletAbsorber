@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Bullet Absorber</title>
+		<style type="text/css">
+		#wrapper{
+			background-color: #576775;
+			width: 96%;
+			max-width: 1080px;
+			margin: auto;
+			padding: 2%;
+			padding-bottom: 1%;
+		}
+
+		body{
+			background-color: #141F28;
+		}
+
+		h2{
+			color: #5AD8E0;
+			margin-top: 5%;
+			margin-bottom: 0%;
+		}
+
+		h3, p{
+			color: #5AD8E0;
+			margin-top: 2%;
+			margin-bottom: 1%;
+		}
+
+		header{
+			font-size: 40px;
+			margin-right: auto;
+			margin-left: auto;
+			margin-bottom: 3%;
+			color: #5AD8E0;
+			width: 98%;
+			text-align: center;
+			font-weight: bold;
+		}
+
+		section{
+			background-color:#141F28;
+			border-radius: 5px 5px;
+			padding: 1%;
+			width: 98%;
+		}
+
+		article{
+			background-color: #576775;
+			margin: 1%;
+			padding-left:  1%;
+			padding-right: 1%;
+			padding-top: 5px;
+			padding-bottom: 5px;
+			width: 44%;
+		}
+
+		article.left{
+			float: left;
+		}
+		article.right{
+			float: right;
+		}
+		article.wide{
+			width: 80%;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		img{
+			margin: 1%;
+			width: 98%;
+		}
+
+		#bottom{
+			clear: both;
+		}
+		</style>
+	</head>
+	
+	<body>
+		<div id="wrapper">
+			<header>Bullet Absorber Multiplayer</header>
+
+			<section>
+				<article class="left">
+					<h2>Project Description</h2>
+					<p>
+						A multiplayer co-op (up to 4 players) bullet-hell game where the players work together to take down enemies.
+						However the players can only attack by absorbing energy from the enemy bullet.
+					</p>
+
+					<h2>User Experience / Gameplay Mechanics</h2>
+					<p>
+						The user should be able to create/join rooms and start a game.<br><br>
+
+						During gameplay the user should be able to move in a 2D space, use special abilities and a method to deal 
+						damage to the enemy. Users can use special abilities by gaining enough energy, by getting close to the 
+						enemy bullets, and then activating it by pressing a key. Players can also level up by gaining energy and 
+						will have a set stat gain based on the players class. Each player will have a basic attack. This attack 
+						can only be done by entering an player attack circle and then hitting a key. After attacking the circle 
+						will dissappear and then reappear again, close to the player, after some time has passed. <br><br>
+
+						The general concept will be similar to the original Bullet Absorber game I created. However, the turn-based
+						system is removed and the player attack and enemy attack are combinded.<br>
+						<a href='../portfolio/projects/bulletAbsorber/game.html'>Oringal Bullet Absorber</a>
+					</p>
+
+					<h2>Controls</h2>
+					<p>
+						wasd / arrowkeys - movement in Game<br>
+						shift - reduce movement speed<br>
+						j / z - confirm / basic attack<br>
+						k,l / x,c - special abilites<br>
+					</p>
+					
+				</article>
+
+				<article class="right">
+					<h2>Features</h2>
+					<h3>Multi-User</h3>
+					<ul>
+						<li>
+							<p>A game session can hold up to 4 players</p>
+						</li>
+						<li>
+							<p>Players can interact with each other with abillites</p>
+						</li>
+					</ul>
+
+					<h3>Client</h3>
+					<p>
+						The game will be made in Canvas. The client will have data of the players and enemy bullets that it 
+						receives from the server and draw it. The client will send the players data when they move/use an 
+						abillity.
+					</p>
+
+					<h3>Server</h3>
+					<ul>
+						<li>
+							<p>Create rooms</p>
+						</li>
+						<li>
+							<p>Check collisions</p>
+						</li>
+						<li>
+							<p>Store player data</p>
+						</li>
+						<li>
+							<p>Run an enemy bullet script</p>
+						</li>
+					</ul>
+
+					<h3>Libraries</h3>
+					<ul>
+						<li>
+							<p>VictorJS</p>
+						</li>
+						<li>
+							<p>SoundJS</p>
+						</li>
+						<li>
+							<p>PreloadJS</p>
+						</li>
+					</ul>
+				</article>
+				<p id="bottom"></p>
+				<article class="wide">
+					<h2>UI Mock Up</h2>
+					<h3>Title Screen</h3>
+					<img src="title.png" alt="Website of Title" />
+					<h3>Room Screen</h3>
+					<img src="room.png" alt="Website of Room" />
+					<h3>Gameplay Screen</h3>
+					<img src="gameplay.png" alt="Website of Gameplay" />
+				</article>
+			</section>
+		</div>
+	</body>
+	
+</html>

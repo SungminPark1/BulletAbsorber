@@ -1,7 +1,7 @@
 var victor = require('victor');
 
 function create(x, y, radius, speedx, speedy, color){
-	bullet = {
+	var bullet = {
 		pos: new victor(x,y),
 		velocity: new victor(speedx, speedy),
 		radius: radius,

@@ -42,34 +42,102 @@
 		}
 
 		document.querySelector('#createRoom').onclick = function(e){
-			//Create div with textbox/submit button to create room
 			//current code for test
-			var pos = {
-				x: Math.random()*600+20,
-				y: Math.random()*600+20,
+			document.querySelector('#gameInfoBox').style.zIndex = 1;
+
+			var divString = '<h1>Enter Room Name</h1>';
+			divString += '<input id="roomName" type="text" placeholder="Room Name"></input>';
+			divString += '<button id="submitCreateRoom">Create Room</button>';
+			divString += '<button id="back">Back</button>';
+			document.querySelector('#gameInfoBox').innerHTML = divString;
+
+
+			//back to menu
+			document.querySelector('#back').onclick = function(e){
+				document.querySelector('#gameInfoBox').style.zIndex = -1;
 			};
 
-			var color = {
-				r: 255,
-				g: 0,
-				b: 0
-			};
+			// create the room
+			document.querySelector('#submitCreateRoom').onclick = function(e){
+				var roomName = document.querySelector('#roomName').value;
+				if(roomName != ''){
+					var pos = {
+						x: Math.random()*600+20,
+						y: Math.random()*600+20,
+					};
 
-			user.pos = pos;
-			user.color = color;
+					var color = {
+						r: 255,
+						g: 0,
+						b: 0
+					};
 
-			socket.emit('createRoom', {
-				room: 'room1',
-				player: {
-					name: user.name,
-					pos: pos,
-					radius: 20,
-					color: color,
-					hit: 0,
-					score: 0,
+					user.pos = pos;
+					user.color = color;
+
+					socket.emit('createRoom', {
+						room: roomName,
+						player: {
+							name: user.name,
+							pos: pos,
+							radius: 20,
+							color: color,
+							hit: 0,
+							score: 0,
+						}
+					});
 				}
-			});
-			console.log('clicked createRoom');
+				document.querySelector('#gameInfoBox').style.zIndex = -1;
+			};			
+		};
+
+		document.querySelector('#joinRoom').onclick = function(e){
+			document.querySelector('#gameInfoBox').style.zIndex = 1;
+
+			var divString = '<h1>Enter Room Name</h1>';
+			divString += '<input id="roomName" type="text" placeholder="Room Name"></input>';
+			divString += '<button id="submitJoinRoom">Join Room</button>';
+			divString += '<button id="back">Back</button>';
+			document.querySelector('#gameInfoBox').innerHTML = divString;
+
+			//back to menu
+			document.querySelector('#back').onclick = function(e){
+				document.querySelector('#gameInfoBox').style.zIndex = -1;
+			};
+
+			// create the room
+			document.querySelector('#submitJoinRoom').onclick = function(e){
+				var roomName = document.querySelector('#roomName').value;
+				if(roomName != ''){
+					var pos = {
+						x: Math.random()*600+20,
+						y: Math.random()*600+20,
+					};
+
+					var color = {
+						r: 255,
+						g: 0,
+						b: 0
+					};
+
+					user.pos = pos;
+					user.color = color;
+
+					
+					socket.emit('joinRoom', {
+						room: roomName,
+						player: {
+							name: user.name,
+							pos: pos,
+							radius: 20,
+							color: color,
+							hit: 0,
+							score: 0,
+						}
+					});
+				}
+				document.querySelector('#gameInfoBox').style.zIndex = -1;
+			};	
 		};
 
 		highScore = 0;

@@ -29,6 +29,20 @@ canvas{
 	left: 40%;
 }
 
+#gameInfoBox{
+	margin: 0px auto;
+	padding: 10px 5px;
+	border: 2px solid #ddd;
+	background-color: black;
+	color: #ddd;
+	position: absolute;
+	width: 60%;
+	left: 20%;
+	top: 40%;
+	height: 30%;
+	z-index: -2;
+}
+
 #joinRoom{
 	top: 50%;
 }
