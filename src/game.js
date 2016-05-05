@@ -1,5 +1,6 @@
-var bullet = require('./bullet.js'); 
-var enemies;
+var bullet = require('./game/bullet.js'); 
+var enemies = require('./game/enemies.js');
+var classes = require('./game/classes.js');
 
 // TO DO
 // Grid for collisions 10x10 grid?
@@ -9,10 +10,11 @@ function createGame(data){
 		room: data,
 		started: false,
 		players: {},
+		enemy: null,
 		arrayBullets: [],
 		time: new Date().getTime(),
 		addPlayer: function(player){
-			this.players[player.name] = player;
+			this.players[player.name] = classes.createFighter(player.name);
 		},
 		deletePlayer: function(player){
 			delete this.players[player];
@@ -25,7 +27,29 @@ function createGame(data){
 
 		},
 		update: function(){
+			var now = new Date().getTime();
 
+			// in seconds
+			var dt = (now - this.time) / 1000;
+			this.time = now;
+			// game lobby if false
+			if(this.started === true){
+
+			}
+			else{
+				if(!this.enemy){
+					this.enemy = enemies.createEnemy(1,1);
+				}
+				else{
+					this.enemy.attack1(dt);
+					this.arrayBullets = this.enemy.arrayBullets;
+
+					// remove bullets that are out of bound
+					this.arrayBullets = this.arrayBullets.filter(function(bullet){
+						return bullet.active;
+					});
+				}
+			}
 		}
 	};
 

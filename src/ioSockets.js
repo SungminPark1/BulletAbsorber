@@ -8,7 +8,9 @@ var onJoined = function(socket, io) {
 		socket.room = 'lobby';
 		socket.name = data.name;
 	});
+};
 
+var onMsg = function(socket, io) {
 	socket.on('createRoom', function(data){
 		if(!gameRooms[data.room]){
 			socket.leave('lobby');
@@ -17,7 +19,7 @@ var onJoined = function(socket, io) {
 
 			gameRooms[data.room] = game.createGame(data.room);
 			gameRooms[data.room].addPlayer(data.player);
-			
+			gameRooms[data.room].interval = setInterval(function(){	updateRoom(data.room); }, 1000/60);
 			// emit data back
 			io.sockets.in(data.room).emit('updateData', {
 				room: data.room,
@@ -52,9 +54,7 @@ var onJoined = function(socket, io) {
 			console.log(data.roomName + ' does not exist');
 		}
 	});
-};
 
-var onMsg = function(socket, io) {
 	socket.on('changeReady', function(data){
 
 	});
@@ -63,12 +63,20 @@ var onMsg = function(socket, io) {
 		gameRooms[socket.room].updatePlayers(data);
 
 		// emit data back 
-		// TEMP
-		io.sockets.in(socket.room).emit('update', {
-			players: gameRooms[socket.room].players,
-			arrayBullets: gameRooms[socket.room].arrayBullets
-		});
+		//io.sockets.in(socket.room).emit('update', {
+		//	players: gameRooms[socket.room].players,
+		//	arrayBullets: gameRooms[socket.room].arrayBullets
+		//});
 	});
+
+	updateRoom = function(room){
+		gameRooms[room].update();
+
+		io.sockets.in(room).emit('update', {
+			players: gameRooms[room].players,
+			arrayBullets: gameRooms[room].arrayBullets
+		});
+	}
 };
 
 var onDisconnect = function(socket, io) {
@@ -86,6 +94,7 @@ var onDisconnect = function(socket, io) {
 
 					// deletes room if no players exist in it
 					if(Object.keys(game.players) == 0){
+						clearInterval(gameRooms[game.room].interval)
 						delete gameRooms[keys[i]];
 					}
 				}

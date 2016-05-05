@@ -79,11 +79,6 @@
 						room: roomName,
 						player: {
 							name: user.name,
-							pos: pos,
-							radius: 20,
-							color: color,
-							hit: 0,
-							score: 0,
 						}
 					});
 				}
@@ -128,11 +123,6 @@
 						room: roomName,
 						player: {
 							name: user.name,
-							pos: pos,
-							radius: 20,
-							color: color,
-							hit: 0,
-							score: 0,
 						}
 					});
 				}
@@ -154,6 +144,8 @@
 		socket.on('update', function(data){
 			players = data.players;
 			arrayBullets = data.arrayBullets;
+			console.log(arrayBullets.length);
+
 			draw();
 		});
 
@@ -164,7 +156,10 @@
 			arrayBullets = arrayBullets;
 			started = data.started;
 			isLobby = false;
-			console.log(players);
+			var keys = Object.keys(players);
+			for(var i = 0; i < keys.length; i++){
+				if(keys[i] == user.name) user = players[keys[i]];
+			}
 			draw();
 		});
 	}
@@ -172,29 +167,29 @@
 	// update
 	function update(){
 		if(isLobby === false){
+
 			var now = new Date().getTime(),
 			//in seconds
-				dt = (now - time)/1000;
+			dt = (now - time)/1000;
 
 			time = now;
-
 
 			updated = false;
 
 			if(myKeys.keydown[myKeys.KEYBOARD.KEY_W] == true){
-				user.pos.y += -100 * dt;
+				user.pos.y += -user.speed * dt;
 				updated = true;
 			}
 			if(myKeys.keydown[myKeys.KEYBOARD.KEY_A] == true){
-				user.pos.x += -100 * dt;
+				user.pos.x += -user.speed * dt;
 				updated = true;
 			}
 			if(myKeys.keydown[myKeys.KEYBOARD.KEY_S] == true){
-				user.pos.y += 100 * dt;
+				user.pos.y += user.speed * dt;
 				updated = true;
 			}
 			if(myKeys.keydown[myKeys.KEYBOARD.KEY_D] == true){
-				user.pos.x += 100 * dt;
+				user.pos.x += user.speed * dt;
 				updated = true;
 			}
 
@@ -277,9 +272,38 @@
 						ctx.fillStyle = "rgb(" + drawCall.color.r + ", " + drawCall.color.g + ", " + drawCall.color.b + ")";
 					}
 					ctx.beginPath();
-					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.radius, 0, Math.PI * 2, false);
+					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox, 0, Math.PI * 2, false);
 					ctx.fill();
+					ctx.closePath();
+
+					ctx.lineWidth= 2;
+					// graze radius
+					ctx.strokeStyle = 'white';
+					ctx.beginPath();
+					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, 0, Math.PI * 2, false);
 					ctx.stroke();
+					ctx.closePath();
+
+					// hp bar
+					ctx.strokeStyle = 'rgb(255,0,0)';
+					ctx.beginPath();
+					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, Math.PI/2, Math.PI * (drawCall.hp / drawCall.maxHp) + Math.PI/2, false);
+					ctx.stroke();
+					ctx.closePath();
+
+					// energy bar
+					ctx.strokeStyle = 'rgb(0,0,255)';
+					ctx.beginPath();
+					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, Math.PI/2, -Math.PI * (drawCall.energy / drawCall.maxEnergy) +  Math.PI/2, true);
+					ctx.stroke();
+					ctx.closePath();
+				}
+				
+				ctx.fillStyle = 'white';
+				for(var i = 0; i<arrayBullets.length; i++){
+					ctx.beginPath();
+					ctx.arc(arrayBullets[i].pos.x, arrayBullets[i].pos.y, arrayBullets[i].radius, 0, Math.PI * 2, false);
+					ctx.fill();
 					ctx.closePath();
 				}
 
