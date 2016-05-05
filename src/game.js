@@ -14,7 +14,29 @@ function createGame(data){
 		arrayBullets: [],
 		time: new Date().getTime(),
 		addPlayer: function(player){
-			this.players[player.name] = classes.createFighter(player.name);
+			var color = {};
+			if(Object.keys(this.players).length == 0){
+				color.r = 255;
+				color.g = 0;
+				color.b = 0;
+			}
+			else if(Object.keys(this.players).length == 1){
+				color.r = 0;
+				color.g = 255;
+				color.b = 0;
+			}
+			else if(Object.keys(this.players).length == 2){
+				color.r = 0;
+				color.g = 0;
+				color.b = 255;
+			}
+			else{
+				color.r = 255;
+				color.g = 255;
+				color.b = 0;
+			}
+
+			this.players[player.name] = classes.createFighter(player.name, color);
 		},
 		deletePlayer: function(player){
 			delete this.players[player];
@@ -22,9 +44,43 @@ function createGame(data){
 		},
 		updatePlayers: function(player){
 			this.players[player.name].pos = player.pos;
+			this.players[player.name].skill1Used = player.skill1Used;
+			this.players[player.name].skill2Used = player.skill2Used;
 		},
 		startGame: function(){
 
+		},
+		checkCollision: function(){
+			var keys = Object.keys(this.players);
+
+			for(var i = 0; i< keys.length; i++){
+				var player = this.players[keys[i]];
+				player.hit--;
+
+				//skills!!!!!!!!!!!
+				if(player.skill1Used == true){
+					player.skill1(this.players, this.arrayBullet, this.enemy);
+				}
+
+				for(var j = 0; j<this.arrayBullets.length; j++){
+					if(player.hit < 1 && circlesIntersect(player.pos, this.arrayBullets[j].pos) < (player.hitbox + player.grazeRadius + this.arrayBullets[j].radius)){
+						if(this.arrayBullets[j].absorbed === false){
+							player.energy = Math.min((player.energy + 1), player.maxEnergy);
+							player.currentExp++;
+							this.arrayBullets[j].absorbed = true;
+						}
+
+						if(player.currentExp == player.exp) player.levelUp();
+
+						if(circlesIntersect(player.pos, this.arrayBullets[j].pos) < (player.hitbox + this.arrayBullets[j].radius) && this.arrayBullets[j].active === true){
+							player.hp -= this.enemy.damage;
+							player.hit = player.invul;
+							player.energy = Math.round(player.energy*.75);
+							this.arrayBullets[j].active = false;
+						}
+					}
+				}
+			}
 		},
 		update: function(){
 			var now = new Date().getTime();
@@ -44,6 +100,8 @@ function createGame(data){
 					this.enemy.attack1(dt);
 					this.arrayBullets = this.enemy.arrayBullets;
 
+					this.checkCollision();
+
 					// remove bullets that are out of bound
 					this.arrayBullets = this.arrayBullets.filter(function(bullet){
 						return bullet.active;
@@ -54,6 +112,13 @@ function createGame(data){
 	};
 
 	return game;
+}
+
+function circlesIntersect(c1,c2){
+	var dx = c2.x - c1.x;
+	var dy = c2.y - c1.y;
+	var distance = Math.sqrt(dx*dx + dy*dy);
+	return distance;
 }
 
 module.exports = {

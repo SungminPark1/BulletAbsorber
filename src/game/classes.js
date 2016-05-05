@@ -1,15 +1,11 @@
-var createFighter = function(name) {
+var createFighter = function(name, color) {
 	var fighter = {
 		name: name,
 		pos: {
 			x: 200,
 			y: 200,
 		},
-		color:{
-			r: 255,
-			g: 0,
-			b: 0,
-		},
+		color: color,
 		hp: 10,
 		maxHp: 10,
 		hpCap: 100,
@@ -22,7 +18,7 @@ var createFighter = function(name) {
 		hitboxCap: 5,
 
 		grazeRadius: 15,
-		grazeRadiusCap: 50,
+		grazeRadiusCap: 30,
 
 		currentAttackRate: 500,
 		attackRate: 500,
@@ -34,29 +30,52 @@ var createFighter = function(name) {
 		minDamage: 5,
 		minDamageCap: 50,
 
-		speed: 200,
-		speedCap: 300,
+		speed: 100,
+		speedCap: 200,
+
+		hit: 0,
+		invul: 30,
+		invulCap: 120,
 
 		currentExp: 0,
 		exp: 10,
 
-		skill1: false,
-		skill2: false,
+		skill1Used: false,
+		skill1: function(players, arrayBullet, enemy){
+			console.log('hit');
+			var keys = Object.keys(players);
+
+			for(var i = 0; i< keys.length; i++){
+				players[keys[i]].hp = players[keys[i]].maxHp;
+			}
+			this.skill1Used = false;
+		},
+
+		skill2Used: false,
+		skill2: function(players, arrayBullet, enemy){
+
+			this.skill2Used = false;
+		},
 
 		levelUp: function(){
-			this.maxHp = Math.min((this.maxHp + 5), this.hpCap);
+			this.maxHp = Math.min((this.maxHp + 2), this.hpCap);
+			this.hp = this.maxHp;
 
-			this.maxEnergy = Math.min((this.maxEnergy + 5), this.energyCap);
+			this.maxEnergy = Math.min((this.maxEnergy + 1), this.energyCap);
 
-			this.hitbox = Math.max((this.hitbox - 2), this.hitboxCap);
+			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap);
 
-			this.grazeRadius = Math.min((this.grazeRadius + 2), this.grazeRadiusCap);
+			this.grazeRadius = Math.min((this.grazeRadius + 1), this.grazeRadiusCap);
+
+			this.attackRate = Math.max((this.attackRate), this.attackRateCap);
 
 			this.maxDamage = Math.min((this.maxDamage + 3), this.maxDamageCap);
 
-			this.minDamage = Math.min((this.minDamage +2), this.minDamageCap);
+			this.minDamage = Math.min((this.minDamage + 2), this.minDamageCap);
 
-			this.speed = Math.min((this.speed + 10), this.speedCap);
+			this.speed = Math.min((this.speed + 5), this.speedCap);
+
+			this.invul = Math.min((this.invul +2), this.invulCap);
 
 			this.currentExp = 0;
 			this.exp += 10;

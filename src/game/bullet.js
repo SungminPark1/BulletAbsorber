@@ -5,7 +5,7 @@ function create(x, y, radius, speedx, speedy, color){
 		pos: new victor(x,y),
 		velocity: new victor(speedx, speedy),
 		radius: radius,
-		absorbered: false,
+		absorbed: false,
 		active: true,
 		update: function(dt){
 			this.pos.x += this.velocity.x * dt;

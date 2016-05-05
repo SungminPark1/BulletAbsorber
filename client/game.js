@@ -144,8 +144,6 @@
 		socket.on('update', function(data){
 			players = data.players;
 			arrayBullets = data.arrayBullets;
-			console.log(arrayBullets.length);
-
 			draw();
 		});
 
@@ -192,17 +190,18 @@
 				user.pos.x += user.speed * dt;
 				updated = true;
 			}
+			if(myKeys.keydown[myKeys.KEYBOARD.KEY_L] == true){
+				user.skill1Used = true;
+				updated = true;
+			}
 
 			// prevent player from going out of bound
 			user.pos.x = clamp(user.pos.x, 20, 620);
-			user.pos.y = clamp(user.pos.y, 20, 620);
+			user.pos.y = clamp(user.pos.y, 20, 490);
 
 			// if this client's user moves, send to server to update other clients
 			if(updated == true){
-				socket.emit('updatePlayer', {
-					name: user.name,
-					pos: user.pos
-				});
+				socket.emit('updatePlayer', user);
 			}
 		}
 	}
@@ -262,6 +261,18 @@
 			}
 			else{
 				var keys = Object.keys(players);
+				ctx.fillStyle = "purple";
+				ctx.fillRect(300,50,40,40);
+
+				for(var i = 0; i<arrayBullets.length; i++){
+					if(arrayBullets[i].absorbed == false) ctx.fillStyle = "white";
+					else ctx.fillStyle = "gray";
+
+					ctx.beginPath();
+					ctx.arc(arrayBullets[i].pos.x, arrayBullets[i].pos.y, arrayBullets[i].radius, 0, Math.PI * 2, false);
+					ctx.fill();
+					ctx.closePath();
+				}
 
 				for(var i = 0; i < keys.length; i++){
 					var drawCall = players[ keys[i] ];
@@ -291,29 +302,43 @@
 					ctx.stroke();
 					ctx.closePath();
 
+					// exp bar
+					ctx.strokeStyle = 'rgb(255,255,0)';
+					ctx.beginPath();
+					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox, Math.PI/2, Math.PI * (drawCall.currentExp / (drawCall.exp/2)) + Math.PI/2, false);
+					ctx.stroke();
+					ctx.closePath();
+
 					// energy bar
 					ctx.strokeStyle = 'rgb(0,0,255)';
 					ctx.beginPath();
 					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, Math.PI/2, -Math.PI * (drawCall.energy / drawCall.maxEnergy) +  Math.PI/2, true);
 					ctx.stroke();
 					ctx.closePath();
+
+					ctx.fillStyle = "rgba(0,0,0,.5)";
+					ctx.strokeStyle = "white";
+					ctx.textAlign = "center";
+					ctx.textBaseline = "middle";
+					ctx.fillRect(2+ i * 159,510, 159, 128);
+					ctx.strokeRect(2+ i * 159,510, 159, 128);
+					fillText(ctx, drawCall.name, 79 + i * 159 , 525, "15pt courier", "rgb(" + drawCall.color.r  +"," + drawCall.color.g + "," + drawCall.color.b + ")");
+					fillText(ctx, "Damage: " + drawCall.minDamage + "~" + drawCall.maxDamage,  79 + i * 159 , 550, "12pt courier", "#ddd");
+					ctx.strokeRect(30 + i*159, 575, 50, 50);
+					ctx.strokeRect(80 + i*159, 575, 50, 50);
+					fillText(ctx, "K", 55 + i * 159 , 600, "12pt courier", "#ddd");
+					fillText(ctx, "L", 105 + i * 159 , 600, "12pt courier", "#ddd");
 				}
 				
 				ctx.fillStyle = 'white';
-				for(var i = 0; i<arrayBullets.length; i++){
-					ctx.beginPath();
-					ctx.arc(arrayBullets[i].pos.x, arrayBullets[i].pos.y, arrayBullets[i].radius, 0, Math.PI * 2, false);
-					ctx.fill();
-					ctx.closePath();
-				}
 
 				document.querySelector('#createRoom').style.visibility = 'hidden';
 				document.querySelector('#joinRoom').style.visibility = 'hidden';
 				document.querySelector('#instructions').style.visibility = 'hidden';
 				ctx.textAlign = "center";
 				ctx.textBaseline = "middle";
-				fillText(ctx, room, 640/2, 640/2 - 200, "50pt courier", "#ddd");
-				fillText(ctx, "WASD to move", 640/2, 640 - 100, "15pt courier", "#ddd");
+				fillText(ctx, "Room: " + room, 50, 25, "10pt courier", "#ddd");
+				fillText(ctx, "WASD to move", 640/2, 500, "15pt courier", "#ddd");
 			}
 		}
 	}
@@ -330,7 +355,7 @@
 	ctx.fillStyle = color;
 	ctx.fillText(string, x, y);
 	ctx.restore();
-}
+	}
 
 	// Keyboard stuff
 	var myKeys = {};
@@ -338,7 +363,10 @@
 		"KEY_W": 87,
 		"KEY_A": 65,
 		"KEY_S": 83,
-		"KEY_D": 68
+		"KEY_D": 68,
+		"KEY_J": 74,
+		"KEY_K": 75,
+		"KEY_L": 76
 	};
 
 	myKeys.keydown = [];

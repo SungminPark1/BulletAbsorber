@@ -24,7 +24,7 @@ var createEnemy = function(type, level){
 					this.arrayBullets[i].update(dt);
 				}
 
-				var vec = victor(Math.random(), Math.random());
+				var vec = victor(Math.random() *2 - 1, Math.random() * 2 - 1);
 				var radius = 9.5 + (this.difficulty *.5);
 				var spawnRate = Math.round(10.5 - (this.difficulty * .5));
 
@@ -37,7 +37,7 @@ var createEnemy = function(type, level){
 				}
 
 				if(this.currentAttackDur%2 == 0){
-					this.arrayBullets.push(bullet.create(100, 100, radius, vec.x * 100, vec.y * 100, "#FFFFFF"));
+					this.arrayBullets.push(bullet.create(320, 50, radius, vec.x * 100, vec.y * 100, "#FFFFFF"));
 				}
 				this.currentAttackDur--;
 			},
