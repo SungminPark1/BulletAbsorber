@@ -55,7 +55,6 @@ function createGame(data){
 
 			for(var i = 0; i< keys.length; i++){
 				var player = this.players[keys[i]];
-				player.hit--;
 
 				//skills!!!!!!!!!!!
 				if(player.skill1Used == true){
@@ -63,22 +62,47 @@ function createGame(data){
 				}
 
 				for(var j = 0; j<this.arrayBullets.length; j++){
-					if(player.hit < 1 && circlesIntersect(player.pos, this.arrayBullets[j].pos) < (player.hitbox + player.grazeRadius + this.arrayBullets[j].radius)){
-						if(this.arrayBullets[j].absorbed === false){
-							player.energy = Math.min((player.energy + 1), player.maxEnergy);
-							player.currentExp++;
-							this.arrayBullets[j].absorbed = true;
-						}
+					// dont detect collisions if player is invulnerable
+					if(player.hit <= 0 && player.alive === true){
+						//check collision with graze radius
+						if(circlesIntersect(player.pos, this.arrayBullets[j].pos) < (player.hitbox + player.grazeRadius + this.arrayBullets[j].radius)){
 
-						if(player.currentExp == player.exp) player.levelUp();
+							//increase players energy and exp
+							if(this.arrayBullets[j].absorbed === false){
+								player.energy = Math.min((player.energy + 1), player.maxEnergy);
+								player.currentExp++;
+								this.arrayBullets[j].absorbed = true;
+							}
 
-						if(circlesIntersect(player.pos, this.arrayBullets[j].pos) < (player.hitbox + this.arrayBullets[j].radius) && this.arrayBullets[j].active === true){
-							player.hp -= this.enemy.damage;
-							player.hit = player.invul;
-							player.energy = Math.round(player.energy*.75);
-							this.arrayBullets[j].active = false;
-						}
+							// check if player levels up
+							if(player.currentExp == player.exp) player.levelUp();
+
+							// check collision with player hitbox
+							if(circlesIntersect(player.pos, this.arrayBullets[j].pos) < (player.hitbox + this.arrayBullets[j].radius) && this.arrayBullets[j].active === true){
+								player.hp -= this.enemy.damage;
+								player.hit = player.invul;
+								player.energy = Math.round(player.energy*.75);
+								this.arrayBullets[j].active = false;
+
+								// check if player is dead
+								if(player.hp <= 0){
+									player.hp = 0;
+									player.energy = 0;
+									player.currentExp = Math.round(player.currentExp * 0.5); //loss some exp
+									player.alive = false;
+									player.reviveTimer = 3600; // dead for about 1 min
+								}
+							}
+						}						
 					}
+				}
+				
+				player.hit--;
+				player.reviveTimer--;
+
+				if(player.alive === false && player.reviveTimer <= 0){
+					player.hp = player.maxHp;
+					player.alive = true;
 				}
 			}
 		},

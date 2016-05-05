@@ -36,7 +36,7 @@ var createEnemy = function(type, level){
 					spawnRate = 2;
 				}
 
-				if(this.currentAttackDur%2 == 0){
+				if(this.currentAttackDur%spawnRate == 0){
 					this.arrayBullets.push(bullet.create(320, 50, radius, vec.x * 100, vec.y * 100, "#FFFFFF"));
 				}
 				this.currentAttackDur--;

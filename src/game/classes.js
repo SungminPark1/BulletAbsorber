@@ -6,6 +6,9 @@ var createFighter = function(name, color) {
 			y: 200,
 		},
 		color: color,
+		alive: true,
+		reviveTimer: 0,
+
 		hp: 10,
 		maxHp: 10,
 		hpCap: 100,
@@ -42,12 +45,12 @@ var createFighter = function(name, color) {
 
 		skill1Used: false,
 		skill1: function(players, arrayBullet, enemy){
-			console.log('hit');
 			var keys = Object.keys(players);
 
 			for(var i = 0; i< keys.length; i++){
 				players[keys[i]].hp = players[keys[i]].maxHp;
 			}
+
 			this.skill1Used = false;
 		},
 

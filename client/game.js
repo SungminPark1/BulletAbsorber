@@ -144,6 +144,10 @@
 		socket.on('update', function(data){
 			players = data.players;
 			arrayBullets = data.arrayBullets;
+			var keys = Object.keys(players);
+			for(var i = 0; i < keys.length; i++){
+				if(keys[i] == user.name) user = players[keys[i]];
+			}
 			draw();
 		});
 
@@ -154,10 +158,6 @@
 			arrayBullets = arrayBullets;
 			started = data.started;
 			isLobby = false;
-			var keys = Object.keys(players);
-			for(var i = 0; i < keys.length; i++){
-				if(keys[i] == user.name) user = players[keys[i]];
-			}
 			draw();
 		});
 	}
@@ -190,9 +190,13 @@
 				user.pos.x += user.speed * dt;
 				updated = true;
 			}
-			if(myKeys.keydown[myKeys.KEYBOARD.KEY_L] == true){
-				user.skill1Used = true;
-				updated = true;
+
+			// players can only use skills when alive
+			if(user.alive === true){
+				if(myKeys.keydown[myKeys.KEYBOARD.KEY_L] == true){
+					user.skill1Used = true;
+					updated = true;
+				}
 			}
 
 			// prevent player from going out of bound
@@ -216,9 +220,9 @@
 			fillText(ctx, "Title", 640/2, 640/2 - 200, "50pt courier", "#ddd");
 
 			fillText(ctx, "Control", 640/2, 640 - 130, "20pt courier", "#ddd");
-			fillText(ctx, "atm only create room button does anything", 640/2, 640 - 100, "15pt courier", "#ddd");
-			fillText(ctx, "use cursor to click buttons", 640/2, 640 - 75, "15pt courier", "#ddd");
-			//fillText(ctx, "Arrow Keys or WASD to move", 640/2, 640 - 100, "15pt courier", "#ddd");
+			fillText(ctx, "Create a new room or join an existing room", 640/2, 640 - 100, "15pt courier", "#ddd");
+			fillText(ctx, "Use cursor to click buttons", 640/2, 640 - 75, "15pt courier", "#ddd");
+			//fillText(ctx, "Use cursor to click buttons", 640/2, 640 - 50, "15pt courier", "#ddd");
 			//fillText(ctx, "Z or J to comfirm", 640/2, 640 - 75, "15pt courier", "#ddd");
 			//fillText(ctx, "Shift or L to slow movement speed", 640/2, 640 - 50, "15pt courier", "#ddd");
 
@@ -276,45 +280,62 @@
 
 				for(var i = 0; i < keys.length; i++){
 					var drawCall = players[ keys[i] ];
-					if(drawCall.hit > 0){
-						ctx.fillStyle = "rgb(" + (255 - drawCall.color.r) + ", " + (255 -drawCall.color.g) + ", " + (255 -drawCall.color.b) + ")";
-					}	
-					else{		
-						ctx.fillStyle = "rgb(" + drawCall.color.r + ", " + drawCall.color.g + ", " + drawCall.color.b + ")";
+
+					if(drawCall.alive === true){
+						ctx.lineWidth= 2;
+						// graze radius
+						ctx.strokeStyle = 'white';
+						ctx.beginPath();
+						ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, 0, Math.PI * 2, false);
+						ctx.stroke();
+						ctx.closePath();
+
+						// hp bar
+						ctx.strokeStyle = 'rgb(255,0,0)';
+						ctx.beginPath();
+						ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, Math.PI/2, Math.PI * (drawCall.hp / drawCall.maxHp) + Math.PI/2, false);
+						ctx.stroke();
+						ctx.closePath();
+
+						// energy bar
+						ctx.strokeStyle = 'rgb(0,0,255)';
+						ctx.beginPath();
+						ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, Math.PI/2, -Math.PI * (drawCall.energy / drawCall.maxEnergy) +  Math.PI/2, true);
+						ctx.stroke();
+						ctx.closePath();
+					}
+
+					// exp bar
+					ctx.strokeStyle = 'rgb(255,255,0)';
+					ctx.beginPath();
+					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox+1, Math.PI/2, Math.PI * (drawCall.currentExp / (drawCall.exp/2)) + Math.PI/2, false);
+					ctx.stroke();
+					ctx.closePath();
+
+					// draw hitbox depending on player's state
+					if(drawCall.alive === true){
+						if(drawCall.hit > 0){
+							ctx.fillStyle = "rgba(" + (drawCall.color.r) + ", " + (drawCall.color.g) + ", " + (drawCall.color.b) + ", .5)";
+						}	
+						else{		
+							ctx.fillStyle = "rgb(" + drawCall.color.r + ", " + drawCall.color.g + ", " + drawCall.color.b + ")";
+						}
+					}
+					else{
+							ctx.fillStyle = "rgba(" + (drawCall.color.r) + ", " + (drawCall.color.g) + ", " + (drawCall.color.b) + ", .5)";
+
+							// hp bar
+							ctx.strokeStyle = 'rgb(255,255,255)';
+							ctx.beginPath();
+							ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, Math.PI/2, Math.PI * ((3600 - drawCall.reviveTimer) / 1800) + Math.PI/2, false);
+							ctx.stroke();
+							ctx.closePath();
 					}
 					ctx.beginPath();
 					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox, 0, Math.PI * 2, false);
 					ctx.fill();
 					ctx.closePath();
 
-					ctx.lineWidth= 2;
-					// graze radius
-					ctx.strokeStyle = 'white';
-					ctx.beginPath();
-					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, 0, Math.PI * 2, false);
-					ctx.stroke();
-					ctx.closePath();
-
-					// hp bar
-					ctx.strokeStyle = 'rgb(255,0,0)';
-					ctx.beginPath();
-					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, Math.PI/2, Math.PI * (drawCall.hp / drawCall.maxHp) + Math.PI/2, false);
-					ctx.stroke();
-					ctx.closePath();
-
-					// exp bar
-					ctx.strokeStyle = 'rgb(255,255,0)';
-					ctx.beginPath();
-					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox, Math.PI/2, Math.PI * (drawCall.currentExp / (drawCall.exp/2)) + Math.PI/2, false);
-					ctx.stroke();
-					ctx.closePath();
-
-					// energy bar
-					ctx.strokeStyle = 'rgb(0,0,255)';
-					ctx.beginPath();
-					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, Math.PI/2, -Math.PI * (drawCall.energy / drawCall.maxEnergy) +  Math.PI/2, true);
-					ctx.stroke();
-					ctx.closePath();
 
 					ctx.fillStyle = "rgba(0,0,0,.5)";
 					ctx.strokeStyle = "white";
