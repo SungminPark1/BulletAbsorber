@@ -10,6 +10,7 @@
 
 	var room, started, isLobby;
 	var players = {};
+	var enemy = {};
 	var arrayBullets = [];
 	var time;
 
@@ -152,8 +153,11 @@
 			arrayBullets = arrayBullets;
 			started = data.started;
 			isLobby = false;
+			var keys = Object.keys(players);
+			for(var i = 0; i < keys.length; i++){
+				if(keys[i] == user.name)user = players[keys[i]];
+			}
 			draw();
-			console.log('hit');
 		});
 	}
 
@@ -174,33 +178,43 @@
 					var player = players[keys[i]];
 
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_W] === true){
-						player.pos.y += -player.speed * dt;
+						user.pos.y += -user.speed * dt;
 					}
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_A] === true){
-						player.pos.x += -player.speed * dt;
+						user.pos.x += -player.speed * dt;
 					}
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_S] === true){
-						player.pos.y += player.speed * dt;
+						user.pos.y += player.speed * dt;
 					}
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_D] === true){
-						player.pos.x += player.speed * dt;
+						user.pos.x += player.speed * dt;
 					}
 
 					// players can only use skills when alive
 					if(player.alive === true){
-						if(myKeys.keydown[myKeys.KEYBOARD.KEY_L] === true){
+						if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] === true){
 							player.skill1Used = true;
+						}
+						if(myKeys.keydown[myKeys.KEYBOARD.KEY_K] === true){
+							player.skill1Used = true;
+						}
+						if(myKeys.keydown[myKeys.KEYBOARD.KEY_L] === true){
+							player.skill2Used = true;
 						}
 					}
 
 					// prevent player from going out of bound
-					player.pos.x = clamp(player.pos.x, 20, 620);
-					player.pos.y = clamp(player.pos.y, 20, 490);
+					user.pos.x = clamp(user.pos.x, 20, 620);
+					user.pos.y = clamp(user.pos.y, 20, 490);
 
 					// if this client's user moves, send to server to update other clients
-					socket.emit('updatePlayer', player);
+					socket.emit('updatePlayer', {
+						name: player.name,
+						pos: user.pos,
+						skill1Used: player.skill1Used,
+						skill2Used: player.skill2Used
+					});
 					
-
 					draw();
 					return;
 				}
@@ -212,7 +226,7 @@
 	function draw(){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-		if(isLobby == true){
+		if(isLobby === true){
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
 			fillText(ctx, "Title", 640/2, 640/2 - 200, "50pt courier", "#ddd");
@@ -226,7 +240,7 @@
 
 		}
 		else{
-			if(started == true){
+			if(started === true){
 				var keys = Object.keys(players);
 
 				for(var i = 0; i < keys.length; i++){
@@ -263,9 +277,18 @@
 			}
 			else{
 				var keys = Object.keys(players);
+
+				// Enemy Draw
 				ctx.fillStyle = "purple";
 				ctx.fillRect(300,50,40,40);
 
+				ctx.strokeStyle = "red";
+				ctx.beginPath();
+				ctx.arc(320, 70, 50 , 0, Math.PI * 2, false);
+				ctx.stroke();
+				ctx.closePath();
+
+				// bullet array draw
 				for(var i = 0; i<arrayBullets.length; i++){
 					if(arrayBullets[i].absorbed == false) ctx.fillStyle = "white";
 					else ctx.fillStyle = "gray";
@@ -276,6 +299,7 @@
 					ctx.closePath();
 				}
 
+				// draw players
 				for(var i = 0; i < keys.length; i++){
 					var drawCall = players[ keys[i] ];
 
@@ -325,7 +349,7 @@
 							// hp bar
 							ctx.strokeStyle = 'rgb(255,255,255)';
 							ctx.beginPath();
-							ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, Math.PI/2, Math.PI * ((3600 - drawCall.reviveTimer) / 1800) + Math.PI/2, false);
+							ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + drawCall.grazeRadius, Math.PI/2, Math.PI * (drawCall.reviveTime - drawCall.reviveTimer) / (drawCall.reviveTime/2) + Math.PI/2, false);
 							ctx.stroke();
 							ctx.closePath();
 					}
@@ -349,8 +373,8 @@
 					fillText(ctx, "L", 105 + i * 159 , 600, "12pt courier", "#ddd");
 				}
 				
+				// draw hud				
 				ctx.fillStyle = 'white';
-
 				document.querySelector('#createRoom').style.visibility = 'hidden';
 				document.querySelector('#joinRoom').style.visibility = 'hidden';
 				document.querySelector('#instructions').style.visibility = 'hidden';

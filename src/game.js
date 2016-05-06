@@ -86,11 +86,13 @@ function createGame(data){
 
 								// check if player is dead
 								if(player.hp <= 0){
+									console.log('hit');
 									player.hp = 0;
 									player.energy = 0;
 									player.currentExp = Math.round(player.currentExp * 0.5); //loss some exp
 									player.alive = false;
-									player.reviveTimer = 3600; // dead for about 1 min
+									player.reviveTime += 600; // increase the revive timer by 10 sec
+									player.reviveTimer = player.reviveTime; // dead however long their relive time is
 								}
 							}
 						}						

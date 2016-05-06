@@ -7,7 +7,9 @@ var createFighter = function(name, color) {
 		},
 		color: color,
 		alive: true,
+
 		reviveTimer: 0,
+		reviveTime: 1200,
 
 		hp: 10,
 		maxHp: 10,
