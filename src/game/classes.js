@@ -1,3 +1,5 @@
+// Change hit to hitTimer and create a bool hit
+// is is for the tank class and its skills and maybe some other classes
 var createFighter = function(name, color) {
 	var fighter = {
 		name: name,
@@ -88,6 +90,18 @@ var createFighter = function(name, color) {
 	};
 
 	return fighter;
+};
+
+var createAbsorber = function(name, color) {
+
+};
+
+var createAura = function(name, color) {
+
+};
+
+var createChampion = function(name, color) {
+
 };
 
 module.exports.createFighter = createFighter;
