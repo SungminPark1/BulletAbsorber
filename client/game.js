@@ -26,8 +26,7 @@
 		setupUI();
 		setupSocket();
 		draw();
-		//setInterval(draw, 1000/30);
-		setInterval(update, 1000/30);
+		setInterval(update, 1000/60);
 	}
 
 	function setupUI(){
