@@ -26,7 +26,6 @@
 		setupUI();
 		setupSocket();
 		draw();
-		setInterval(update, 1000/60);
 	}
 
 	function setupUI(){
@@ -143,7 +142,7 @@
 		socket.on('update', function(data){
 			players = data.players;
 			arrayBullets = data.arrayBullets;
-			draw();
+			update();
 		});
 
 		// update data when players join game room
@@ -154,6 +153,7 @@
 			started = data.started;
 			isLobby = false;
 			draw();
+			console.log('hit');
 		});
 	}
 
@@ -162,49 +162,48 @@
 		if(isLobby === false){
 			var keys = Object.keys(players);
 			for(var i = 0; i < keys.length; i++){
-				if(keys[i] == user.name) user = players[keys[i]];
-			}
-			
-			var now = new Date().getTime(),
-			//in seconds
-			dt = (now - time)/1000;
+				if(keys[i] == user.name){
+					var now = new Date().getTime(),
+					//in seconds
+					dt = (now - time)/1000;
 
-			time = now;
+					time = now;
 
-			updated = false;
+					updated = false;
 
-			if(myKeys.keydown[myKeys.KEYBOARD.KEY_W] == true){
-				user.pos.y += -user.speed * dt;
-				updated = true;
-			}
-			if(myKeys.keydown[myKeys.KEYBOARD.KEY_A] == true){
-				user.pos.x += -user.speed * dt;
-				updated = true;
-			}
-			if(myKeys.keydown[myKeys.KEYBOARD.KEY_S] == true){
-				user.pos.y += user.speed * dt;
-				updated = true;
-			}
-			if(myKeys.keydown[myKeys.KEYBOARD.KEY_D] == true){
-				user.pos.x += user.speed * dt;
-				updated = true;
-			}
+					var player = players[keys[i]];
 
-			// players can only use skills when alive
-			if(user.alive === true){
-				if(myKeys.keydown[myKeys.KEYBOARD.KEY_L] == true){
-					user.skill1Used = true;
-					updated = true;
+					if(myKeys.keydown[myKeys.KEYBOARD.KEY_W] === true){
+						player.pos.y += -player.speed * dt;
+					}
+					if(myKeys.keydown[myKeys.KEYBOARD.KEY_A] === true){
+						player.pos.x += -player.speed * dt;
+					}
+					if(myKeys.keydown[myKeys.KEYBOARD.KEY_S] === true){
+						player.pos.y += player.speed * dt;
+					}
+					if(myKeys.keydown[myKeys.KEYBOARD.KEY_D] === true){
+						player.pos.x += player.speed * dt;
+					}
+
+					// players can only use skills when alive
+					if(player.alive === true){
+						if(myKeys.keydown[myKeys.KEYBOARD.KEY_L] === true){
+							player.skill1Used = true;
+						}
+					}
+
+					// prevent player from going out of bound
+					player.pos.x = clamp(player.pos.x, 20, 620);
+					player.pos.y = clamp(player.pos.y, 20, 490);
+
+					// if this client's user moves, send to server to update other clients
+					socket.emit('updatePlayer', player);
+					
+
+					draw();
+					return;
 				}
-			}
-
-			// prevent player from going out of bound
-			user.pos.x = clamp(user.pos.x, 20, 620);
-			user.pos.y = clamp(user.pos.y, 20, 490);
-
-			// if this client's user moves, send to server to update other clients
-			if(updated == true){
-				socket.emit('updatePlayer', user);
 			}
 		}
 	}
