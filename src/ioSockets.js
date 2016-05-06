@@ -61,12 +61,6 @@ var onMsg = function(socket, io) {
 
 	socket.on('updatePlayer', function(data){
 		gameRooms[socket.room].updatePlayers(data);
-
-		// emit data back 
-		//io.sockets.in(socket.room).emit('update', {
-		//	players: gameRooms[socket.room].players,
-		//	arrayBullets: gameRooms[socket.room].arrayBullets
-		//});
 	});
 
 	updateRoom = function(room){

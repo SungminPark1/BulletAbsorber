@@ -143,10 +143,6 @@
 		socket.on('update', function(data){
 			players = data.players;
 			arrayBullets = data.arrayBullets;
-			var keys = Object.keys(players);
-			for(var i = 0; i < keys.length; i++){
-				if(keys[i] == user.name) user = players[keys[i]];
-			}
 			draw();
 		});
 
@@ -164,7 +160,11 @@
 	// update
 	function update(){
 		if(isLobby === false){
-
+			var keys = Object.keys(players);
+			for(var i = 0; i < keys.length; i++){
+				if(keys[i] == user.name) user = players[keys[i]];
+			}
+			
 			var now = new Date().getTime(),
 			//in seconds
 			dt = (now - time)/1000;
