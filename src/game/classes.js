@@ -1,7 +1,36 @@
-// Change hit to hitTimer and create a bool hit
-// is is for the tank class and its skills and maybe some other classes
+/*	support = 13 stars + their special support stat
+	others = 16 stars
+	
+	LEVEL UP STAT INCREASE RATES 
+	Stat - 1 star, 2 star, 3 star
+		Hp - 2, 4, 6
+		Energy - 1, 2, 3
+		Graze Radius - .5, 1, 1.5
+		Attack Rate - 5, 10, 15
+		Max Damage - 2, 4, 6
+		Min Damage - 1, 2, 3
+		Speed - 2.5, 5, 7.5
+		Invul - 1, 2, 3
+
+	Support Stats
+		Supplier
+			ExpGain - .025
+			EnergyRegen - .02 (Allies only)
+
+		Aura
+			Healing - .025
+			DoT(damage over time) - .1
+
+*/
+// SKILLS NOT IMPLEMENTED YET
+
+// Active skills = click to use once
+// Sustained skill = click to toggle on/off
+
+// Active Skill - Smash (deals max damage), Final Strike (more energy = higher multiplier to max damage)
 var createFighter = function(name, color) {
 	var fighter = {
+		type: 'fighter',
 		name: name,
 		pos: {
 			x: 200,
@@ -9,33 +38,29 @@ var createFighter = function(name, color) {
 		},
 		color: color,
 		alive: true,
-
 		reviveTimer: 0,
 		reviveTime: 1200,
 
 		hp: 10,
 		maxHp: 10,
-		hpCap: 100,
 
 		energy: 0,
-		maxEnergy: 10,
-		energyCap: 100,
+		maxEnergy: 20,
+		energyCap: 50,
 
-		hitbox: 20,
-		hitboxCap: 5,
+		hitbox: 25,
+		hitboxCap: 10,
 
 		grazeRadius: 15,
 		grazeRadiusCap: 30,
 
-		currentAttackRate: 500,
-		attackRate: 500,
-		attackRateCap: 100,
+		currentAttackRate: 300,
+		attackRate: 600,
+		attackRateCap: 60,
 
-		maxDamage: 10,
-		maxDamageCap: 100,
+		maxDamage: 3,
 
-		minDamage: 5,
-		minDamageCap: 50,
+		minDamage: 1,
 
 		speed: 100,
 		speedCap: 200,
@@ -65,24 +90,26 @@ var createFighter = function(name, color) {
 		},
 
 		levelUp: function(){
-			this.maxHp = Math.min((this.maxHp + 2), this.hpCap);
+			// 16 / 24 stars
+
+			this.maxHp += 2; // 2, 4, 6
 			this.hp = this.maxHp;
 
-			this.maxEnergy = Math.min((this.maxEnergy + 1), this.energyCap);
+			this.maxEnergy = Math.min((this.maxEnergy + 1), this.energyCap); // 1, 2, 3
 
-			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap);
+			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap); //.5
 
-			this.grazeRadius = Math.min((this.grazeRadius + 1), this.grazeRadiusCap);
+			this.grazeRadius = Math.min((this.grazeRadius + 1), this.grazeRadiusCap); // .5, 1, 1.5
 
-			this.attackRate = Math.max((this.attackRate), this.attackRateCap);
+			this.attackRate = Math.max((this.attackRate - 15), this.attackRateCap); // 5, 10, 15
 
-			this.maxDamage = Math.min((this.maxDamage + 3), this.maxDamageCap);
+			this.maxDamage += 6; // 2,4,6
 
-			this.minDamage = Math.min((this.minDamage + 2), this.minDamageCap);
+			this.minDamage += 3; // 1,2,3
 
-			this.speed = Math.min((this.speed + 5), this.speedCap);
+			this.speed = Math.min((this.speed + 5), this.speedCap); // 2.5, 5, 7.5
 
-			this.invul = Math.min((this.invul +2), this.invulCap);
+			this.invul = Math.min((this.invul + 1), this.invulCap); // 1, 2, 3
 
 			this.currentExp = 0;
 			this.exp += 10;
@@ -92,19 +119,323 @@ var createFighter = function(name, color) {
 	return fighter;
 };
 
-var createAbsorber = function(name, color) {
+// Active Skill - Focused Bomb (clear bullets in graze radius + deal damage), Barrier (more energy = larger bullet clearing radius)
+var createBomber = function(name, color) {
+	var bomber = {
+		type: 'bomber',
+ 		name: name,
+		pos: {
+			x: 200,
+			y: 200,
+		},
+		color: color,
+		alive: true,
+		reviveTimer: 0,
+		reviveTime: 1200,
 
+		hp: 20,
+		maxHp: 20,
+
+		energy: 0,
+		maxEnergy: 20,
+		energyCap: 100,
+
+		hitbox: 30,
+		hitboxCap: 15,
+
+		grazeRadius: 20,
+		grazeRadiusCap: 50,
+
+		currentAttackRate: 300,
+		attackRate: 600,
+		attackRateCap: 60,
+
+		maxDamage: 3,
+
+		minDamage: 1,
+
+		speed: 75,
+		speedCap: 200,
+
+		hit: 0,
+		invul: 30,
+		invulCap: 120,
+
+		currentExp: 0,
+		exp: 10,
+
+		skill1Used: false,
+		skill1: function(players, arrayBullet, enemy){
+			var keys = Object.keys(players);
+
+			for(var i = 0; i< keys.length; i++){
+				players[keys[i]].hp = players[keys[i]].maxHp;
+			}
+
+			this.skill1Used = false;
+		},
+
+		skill2Used: false,
+		skill2: function(players, arrayBullet, enemy){
+
+			this.skill2Used = false;
+		},
+
+		levelUp: function(){
+			// 16 stars
+			
+			this.maxHp += 6; // 3 star
+			this.hp = this.maxHp;
+
+			this.maxEnergy = Math.min((this.maxEnergy + 2), this.energyCap); // 2 star
+
+			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap); 
+
+			this.grazeRadius = Math.min((this.grazeRadius + .5), this.grazeRadiusCap); // 1 star
+
+			this.attackRate = Math.max((this.attackRate - 10), this.attackRateCap); // 2 star
+
+			this.maxDamage += 4; // 2 star
+
+			this.minDamage += 2; // 2 star
+
+			this.speed = Math.min((this.speed + 2.5), this.speedCap); // 1 star
+
+			this.invul = Math.min((this.invul + 3), this.invulCap); // 3 star
+
+			this.currentExp = 0;
+			this.exp += 10;
+		}
+	};
+
+	return bomber;
 };
 
+// support class
+// Sustained skills - ExpGain (convert energy to exp), EnergyRegen (give energy to allies)
+var createSupplier = function(name, color) {
+	var supplier = {
+		type: 'supplier',
+ 		name: name,
+		pos: {
+			x: 200,
+			y: 200,
+		},
+		color: color,
+		alive: true,
+		reviveTimer: 0,
+		reviveTime: 1200,
+
+		hp: 10,
+		maxHp: 10,
+
+		energy: 0,
+		maxEnergy: 20,
+
+		hitbox: 20,
+		hitboxCap: 5,
+
+		grazeRadius: 15,
+		grazeRadiusCap: 40,
+
+		currentAttackRate: 300,
+		attackRate: 600,
+		attackRateCap: 60,
+
+		maxDamage: 3,
+
+		minDamage: 1,
+
+		speed: 100,
+		speedCap: 200,
+
+		hit: 0,
+		invul: 30,
+		invulCap: 120,
+
+		currentExp: 0,
+		exp: 10,
+
+		expGain: .1,
+		expGainCap: .5,
+		skill1Used: false,
+		skill1: function(players, arrayBullet, enemy){
+			if(this.energy <= 0){
+				this.skill1Used = false;
+			}
+			else{
+				var keys = Object.keys(players);
+
+				for(var i = 0; i< keys.length; i++){
+					players[keys[i]].currentExp += this.expGain;
+
+					if(players[keys[i]].currentExp >= players[keys[i]].exp){
+						players[keys[i]].levelUp();
+					}
+				}
+
+				this.energy--;
+			}	
+		},
+
+		energyRegen: .1,
+		energyRegenCap: .5,
+		skill2Used: false,
+		skill2: function(players, arrayBullet, enemy){
+			if(this.energy <= 0){
+				this.skill2Used = false;
+			}
+			else{
+				var keys = Object.keys(players);
+
+				for(var i = 0; i< keys.length; i++){
+					if(keys[i] != this.name){
+						players[keys[i]].energy = Math.min((players[keys[i]].energy + this.energyRegen), players[keys[i]].maxEnergy);
+					}
+				}
+
+				this.energy--;
+			}
+		},
+
+		levelUp: function(){
+			// 13 stars
+			
+			this.maxHp += 2; // 2, 4, 6
+			this.hp = this.maxHp;
+
+			this.maxEnergy += 1; // 1, 2, 3
+
+			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap); //.5
+
+			this.grazeRadius = Math.min((this.grazeRadius + 1.5), this.grazeRadiusCap); // .5, 1, 1.5
+
+			this.attackRate = Math.max((this.attackRate - 5), this.attackRateCap); // 5, 10, 15
+
+			this.maxDamage += 4; // 2,4,6
+
+			this.minDamage += 1; // 1,2,3
+
+			this.speed = Math.min((this.speed + 7.5), this.speedCap); // 2.5, 5, 7.5
+
+			this.invul = Math.min((this.invul + 1), this.invulCap); // 1, 2, 3
+
+			this.expGain =  Math.min((this.expGain + .025), this.expGainCap);
+
+			this.energyRegen =  Math.min((this.energyRegen + .02), this.energyRegenCap);
+
+			this.currentExp = 0;
+			this.exp += 10;
+		}
+	};
+
+	return supplier;
+};
+
+// support class
+// Sustained skills - HpRegen (convert energy to hp), DamageField (convert energy to damage)
 var createAura = function(name, color) {
+	var aura = {
+		type: 'aura',
+ 		name: name,
+		pos: {
+			x: 200,
+			y: 200,
+		},
+		color: color,
+		alive: true,
+		reviveTimer: 0,
+		reviveTime: 1200,
 
-};
+		hp: 10,
+		maxHp: 10,
 
-var createChampion = function(name, color) {
+		energy: 0,
+		maxEnergy: 20,
+		energyCap: 100,
 
+		hitbox: 20,
+		hitboxCap: 5,
+
+		grazeRadius: 10,
+		grazeRadiusCap: 30,
+
+		currentAttackRate: 300,
+		attackRate: 600,
+		attackRateCap: 60,
+
+		maxDamage: 3,
+
+		minDamage: 1,
+
+		speed: 75,
+		speedCap: 200,
+
+		hit: 0,
+		invul: 30,
+		invulCap: 120,
+
+		currentExp: 0,
+		exp: 10,
+
+		hpRegen: .1,
+		hpRegenCap: .5,
+		skill1Used: false,
+		skill1: function(players, arrayBullet, enemy){
+			if(this.energy <= 0){
+				this.skill1Used = false;
+			}
+			else{
+				var keys = Object.keys(players);
+
+				for(var i = 0; i< keys.length; i++){
+					players[keys[i]].hp = Math.min((players[keys[i]].hp + this.hpRegen), players[keys[i]].maxHp);
+				}
+
+				this.energy--;
+			}
+		},
+
+		skill2Used: false,
+		skill2: function(players, arrayBullet, enemy){
+
+			this.skill2Used = false;
+		},
+
+		levelUp: function(){
+			// 14 / 24 stars
+			// NEED TO ADD HEAL STR STAT
+			
+			this.maxHp += 2; // 2, 4, 6
+			this.hp = this.maxHp;
+
+			this.maxEnergy = Math.min((this.maxEnergy + 3), this.energyCap); // 1, 2, 3
+
+			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap); //.5
+
+			this.grazeRadius = Math.min((this.grazeRadius + 1.5), this.grazeRadiusCap); // .5, 1, 1.5
+
+			this.attackRate = Math.max((this.attackRate - 5), this.attackRateCap); // 5, 10, 15
+
+			this.maxDamage += 2; // 2,4,6
+
+			this.minDamage += 1; // 1,2,3
+
+			this.speed = Math.min((this.speed + 5), this.speedCap); // 2.5, 5, 7.5
+
+			this.invul = Math.min((this.invul + 2), this.invulCap); // 1, 2, 3
+
+			this.hpRegen = Math.min((this.hpRegen + .025), this.hpRegenCap); // 1, 2, 3
+
+			this.currentExp = 0;
+			this.exp += 10;
+		}
+	};
+
+	return aura;
 };
 
 module.exports.createFighter = createFighter;
-//module.exports.createAbsorber = createAbsorber;
-//module.exports.createAura = createAura;
-//module.exports.createChampion = createChampion;
+module.exports.createBomber = createBomber;
+module.exports.createSupplier = createSupplier;
+module.exports.createAura = createAura;

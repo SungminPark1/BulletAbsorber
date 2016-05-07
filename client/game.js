@@ -178,7 +178,7 @@
 					var player = players[keys[i]];
 
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_W] === true){
-						user.pos.y += -user.speed * dt;
+						user.pos.y += -player.speed * dt;
 					}
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_A] === true){
 						user.pos.x += -player.speed * dt;

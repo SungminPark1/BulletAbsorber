@@ -19,24 +19,27 @@ function createGame(data){
 				color.r = 255;
 				color.g = 0;
 				color.b = 0;
+				this.players[player.name] = classes.createFighter(player.name, color);
 			}
 			else if(Object.keys(this.players).length == 1){
 				color.r = 0;
 				color.g = 255;
 				color.b = 0;
+				this.players[player.name] = classes.createBomber(player.name, color);
 			}
 			else if(Object.keys(this.players).length == 2){
 				color.r = 0;
 				color.g = 0;
 				color.b = 255;
+				this.players[player.name] = classes.createSupplier(player.name, color);
 			}
 			else{
 				color.r = 255;
-				color.g = 255;
+				color.g = 165;
 				color.b = 0;
+				this.players[player.name] = classes.createAura(player.name, color);
 			}
 
-			this.players[player.name] = classes.createFighter(player.name, color);
 		},
 		deletePlayer: function(player){
 			delete this.players[player];
@@ -57,8 +60,11 @@ function createGame(data){
 				var player = this.players[keys[i]];
 
 				//skills!!!!!!!!!!!
-				if(player.skill1Used == true){
+				if(player.skill1Used === true){
 					player.skill1(this.players, this.arrayBullet, this.enemy);
+				}
+				if(player.skill2Used === true){
+					player.skill2(this.players, this.arrayBullet, this.enemy);
 				}
 
 				for(var j = 0; j<this.arrayBullets.length; j++){
@@ -75,7 +81,7 @@ function createGame(data){
 							}
 
 							// check if player levels up
-							if(player.currentExp == player.exp) player.levelUp();
+							if(player.currentExp >= player.exp) player.levelUp();
 
 							// check collision with player hitbox
 							if(circlesIntersect(player.pos, this.arrayBullets[j].pos) < (player.hitbox + this.arrayBullets[j].radius) && this.arrayBullets[j].active === true){
