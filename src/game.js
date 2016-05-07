@@ -53,6 +53,7 @@ function createGame(data){
 		startGame: function(){
 
 		},
+		// kind of became the new update function......
 		checkCollision: function(){
 			var keys = Object.keys(this.players);
 
@@ -61,10 +62,10 @@ function createGame(data){
 
 				//skills!!!!!!!!!!!
 				if(player.skill1Used === true){
-					player.skill1(this.players, this.arrayBullet, this.enemy);
+					player.skill1(this.players, this.arrayBullets, this.enemy);
 				}
 				if(player.skill2Used === true){
-					player.skill2(this.players, this.arrayBullet, this.enemy);
+					player.skill2(this.players, this.arrayBullets, this.enemy);
 				}
 
 				for(var j = 0; j<this.arrayBullets.length; j++){
@@ -92,7 +93,6 @@ function createGame(data){
 
 								// check if player is dead
 								if(player.hp <= 0){
-									console.log('hit');
 									player.hp = 0;
 									player.energy = 0;
 									player.currentExp = Math.round(player.currentExp * 0.5); //loss some exp

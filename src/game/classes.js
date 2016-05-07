@@ -22,12 +22,13 @@
 			DoT(damage over time) - .1
 
 */
-// SKILLS NOT IMPLEMENTED YET
 
 // Active skills = click to use once
 // Sustained skill = click to toggle on/off
 
 // Active Skill - Smash (deals max damage), Final Strike (more energy = higher multiplier to max damage)
+// To DO
+// implement skill 1 and 2
 var createFighter = function(name, color) {
 	var fighter = {
 		type: 'fighter',
@@ -54,7 +55,7 @@ var createFighter = function(name, color) {
 		grazeRadius: 15,
 		grazeRadiusCap: 30,
 
-		currentAttackRate: 300,
+		currentAttackRate: 600,
 		attackRate: 600,
 		attackRateCap: 60,
 
@@ -73,7 +74,7 @@ var createFighter = function(name, color) {
 		exp: 10,
 
 		skill1Used: false,
-		skill1: function(players, arrayBullet, enemy){
+		skill1: function(players, arrayBullets, enemy){
 			var keys = Object.keys(players);
 
 			for(var i = 0; i< keys.length; i++){
@@ -84,7 +85,7 @@ var createFighter = function(name, color) {
 		},
 
 		skill2Used: false,
-		skill2: function(players, arrayBullet, enemy){
+		skill2: function(players, arrayBullets, enemy){
 
 			this.skill2Used = false;
 		},
@@ -120,6 +121,8 @@ var createFighter = function(name, color) {
 };
 
 // Active Skill - Focused Bomb (clear bullets in graze radius + deal damage), Barrier (more energy = larger bullet clearing radius)
+// TO DO
+// add damage to skill 1
 var createBomber = function(name, color) {
 	var bomber = {
 		type: 'bomber',
@@ -164,21 +167,50 @@ var createBomber = function(name, color) {
 		currentExp: 0,
 		exp: 10,
 
+		skill1Cost: 15,
 		skill1Used: false,
-		skill1: function(players, arrayBullet, enemy){
-			var keys = Object.keys(players);
-
-			for(var i = 0; i< keys.length; i++){
-				players[keys[i]].hp = players[keys[i]].maxHp;
+		skill1: function(players, arrayBullets, enemy){
+			if(this.energy < this.skill1Cost){
+				this.skill1Used = false;
 			}
+			else{
+				for(var i = 0; i<arrayBullets.length; i++){
+					if(circlesIntersect(this.pos, arrayBullets[i].pos) < (this.hitbox + this.grazeRadius + arrayBullets[i].radius)){
+						arrayBullets[i].active = false;
+					}
+				}
 
-			this.skill1Used = false;
+				// remove bullets from array
+				arrayBullets = arrayBullets.filter(function(bullet){
+					return bullet.active;
+				});
+
+				this.energy -= this.skill1Cost;
+				this.skill1Used = false;
+			}
 		},
 
+		skill2Cost: 4,
 		skill2Used: false,
-		skill2: function(players, arrayBullet, enemy){
+		skill2: function(players, arrayBullets, enemy){
+			if(this.energy < this.skill2Cost){
+				this.skill2Used = false;
+			}
+			else{
+				for(var i = 0; i<arrayBullets.length; i++){
+					if(circlesIntersect(this.pos, arrayBullets[i].pos) < (this.hitbox + ( this.grazeRadius * ( this.energy/4 ) ) + arrayBullets[i].radius)){
+						arrayBullets[i].active = false;
+					}
+				}
 
-			this.skill2Used = false;
+				// remove bullets from array
+				arrayBullets = arrayBullets.filter(function(bullet){
+					return bullet.active;
+				});
+
+				this.energy = 0;
+				this.skill2Used = false;
+			}
 		},
 
 		levelUp: function(){
@@ -238,7 +270,7 @@ var createSupplier = function(name, color) {
 		grazeRadius: 15,
 		grazeRadiusCap: 40,
 
-		currentAttackRate: 300,
+		currentAttackRate: 600,
 		attackRate: 600,
 		attackRateCap: 60,
 
@@ -258,8 +290,9 @@ var createSupplier = function(name, color) {
 
 		expGain: .1,
 		expGainCap: .5,
+		skill1Cost: 0,
 		skill1Used: false,
-		skill1: function(players, arrayBullet, enemy){
+		skill1: function(players, arrayBullets, enemy){
 			if(this.energy <= 0){
 				this.skill1Used = false;
 			}
@@ -281,7 +314,7 @@ var createSupplier = function(name, color) {
 		energyRegen: .1,
 		energyRegenCap: .5,
 		skill2Used: false,
-		skill2: function(players, arrayBullet, enemy){
+		skill2: function(players, arrayBullets, enemy){
 			if(this.energy <= 0){
 				this.skill2Used = false;
 			}
@@ -334,6 +367,7 @@ var createSupplier = function(name, color) {
 
 // support class
 // Sustained skills - HpRegen (convert energy to hp), DamageField (convert energy to damage)
+// implement skill 2
 var createAura = function(name, color) {
 	var aura = {
 		type: 'aura',
@@ -360,7 +394,7 @@ var createAura = function(name, color) {
 		grazeRadius: 10,
 		grazeRadiusCap: 30,
 
-		currentAttackRate: 300,
+		currentAttackRate: 600,
 		attackRate: 600,
 		attackRateCap: 60,
 
@@ -381,7 +415,7 @@ var createAura = function(name, color) {
 		hpRegen: .1,
 		hpRegenCap: .5,
 		skill1Used: false,
-		skill1: function(players, arrayBullet, enemy){
+		skill1: function(players, arrayBullets, enemy){
 			if(this.energy <= 0){
 				this.skill1Used = false;
 			}
@@ -397,7 +431,7 @@ var createAura = function(name, color) {
 		},
 
 		skill2Used: false,
-		skill2: function(players, arrayBullet, enemy){
+		skill2: function(players, arrayBullets, enemy){
 
 			this.skill2Used = false;
 		},
@@ -434,6 +468,13 @@ var createAura = function(name, color) {
 
 	return aura;
 };
+
+function circlesIntersect(c1,c2){
+	var dx = c2.x - c1.x;
+	var dy = c2.y - c1.y;
+	var distance = Math.sqrt(dx*dx + dy*dy);
+	return distance;
+}
 
 module.exports.createFighter = createFighter;
 module.exports.createBomber = createBomber;
