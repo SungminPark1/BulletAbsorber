@@ -10,6 +10,7 @@
 
 	var room, started, isLobby;
 	var players = {};
+	var attackCircles = [];
 	var enemy = {};
 	var arrayBullets = [];
 	var time;
@@ -24,6 +25,19 @@
 
 		isLobby = true;
 		started = false;
+
+		// make attack circles
+		for(var i = 0; i < 3; i++){
+			var temp = {
+				pos: {
+					x: 320,
+					y: 320
+				},
+				velocity: getRandomUnitVector(),
+				radius: 40
+			}
+			attackCircles.push(temp);
+		}
 
 		setupUI();
 		setupSocket();
@@ -61,20 +75,6 @@
 			document.querySelector('#submitCreateRoom').onclick = function(e){
 				var roomName = document.querySelector('#roomName').value;
 				if(roomName != ''){
-					var pos = {
-						x: Math.random()*600+20,
-						y: Math.random()*600+20,
-					};
-
-					var color = {
-						r: 255,
-						g: 0,
-						b: 0
-					};
-
-					user.pos = pos;
-					user.color = color;
-
 					socket.emit('createRoom', {
 						room: roomName,
 						player: {
@@ -163,6 +163,7 @@
 			for(var i = 0; i < keys.length; i++){
 				if(keys[i] == user.name)user = players[keys[i]];
 			}
+			time = new Date().getTime();
 			draw();
 		});
 	}
@@ -183,7 +184,6 @@
 
 					updated = false;
 
-					console.log(dt);
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_W] === true){
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_SHIFT] === true) user.pos.y += (-player.speed/2) * dt;
 						else user.pos.y += -player.speed * dt;
@@ -209,9 +209,17 @@
 					if(player.alive === true){
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] === true){
 							if(player.currentAttackRate == 0){
-								socket.emit('attack', {
-									damage: 3
-								});
+								for(var i = 0; i<attackCircles.length; i++){
+									var distance = circlesIntersect(user.pos, attackCircles[i].pos);
+									if( distance < player.hitbox + attackCircles[i].radius){
+										// calculate damage
+										var accuracy = 1 - distance / (player.hitbox + attackCircles[i].radius);
+										socket.emit('attack', {
+											damage:  Math.max(player.maxDamage * accuracy, player.minDamage)
+										});
+									}
+								}
+
 							}
 							updated = true;
 						}
@@ -226,8 +234,31 @@
 					}
 
 					// prevent player from going out of bound
-					user.pos.x = clamp(user.pos.x, 20, 620);
-					user.pos.y = clamp(user.pos.y, 20, 490);
+					user.pos.x = clamp(user.pos.x, player.hitbox, 640 - player.hitbox);
+					user.pos.y = clamp(user.pos.y, player.hitbox, 510 - player.hitbox);
+
+					for(var i = 0; i < attackCircles.length; i++){
+						attackCircles[i].pos.x += attackCircles[i].velocity.x * 2;
+						attackCircles[i].pos.y += attackCircles[i].velocity.y * 2;
+						
+						if(attackCircles[i].pos.x < 30){
+							attackCircles[i].velocity.x *= -1;
+							attackCircles[i].pos.x += attackCircles[i].velocity.x * 2;
+						}
+						if(attackCircles[i].pos.x > 610){
+							attackCircles[i].velocity.x *= -1;
+							attackCircles[i].pos.x += attackCircles[i].velocity.x * 2;
+						}
+						if(attackCircles[i].pos.y < 30){
+							attackCircles[i].velocity.y *= -1;
+							attackCircles[i].pos.y += attackCircles[i].velocity.y * 2;
+						}
+						if(attackCircles[i].pos.y > 480){
+							attackCircles[i].velocity.y *= -1;
+							attackCircles[i].pos.y += attackCircles[i].velocity.y * 2;
+						}
+						
+					}
 
 					// if this client's user moves, send to server to update other clients
 					if(updated === true){
@@ -301,6 +332,16 @@
 			}
 			else{
 				var keys = Object.keys(players);
+
+				// Attack Circle Draw
+
+				for(var i = 0; i < attackCircles.length; i++){
+					ctx.fillStyle = 'rgba(' + user.color.r + ',' + user.color.b + ',' + user.color.g + ', .5)' ;
+					ctx.beginPath();
+					ctx.arc(attackCircles[i].pos.x, attackCircles[i].pos.y, attackCircles[i].radius, 0, Math.PI * 2, false);
+					ctx.fill();
+					ctx.closePath();
+				}
 
 				// Enemy Draw
 				ctx.fillStyle = "purple";
@@ -441,6 +482,22 @@
 		var dy = c2.y - c1.y;
 		var distance = Math.sqrt(dx*dx + dy*dy);
 		return distance;
+	}
+
+	function getRandomUnitVector(){
+		var x = Math.random() * 2 - 1;
+		var y = Math.random() * 2 - 1;
+		var length = Math.sqrt(x*x + y*y);
+		if(length == 0){ // very unlikely
+			x=1; // point right
+			y=0;
+			length = 1;
+		} else{
+			x /= length;
+			y /= length;
+		}
+		
+		return {x:x, y:y};
 	}
 
 	// Keyboard stuff
