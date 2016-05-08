@@ -144,7 +144,7 @@ function createGame(data){
 
 			}
 			else{
-				if(!this.enemy){
+				if(!this.enemy || this.enemy.hp <= 0){
 					this.enemy = enemies.createEnemy(1,1);
 				}
 				else{

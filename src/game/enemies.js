@@ -7,8 +7,8 @@ var createEnemy = function(type, level){
 	if(type == 1){
 		enemy = {
 			name: "Sprayer",
-			hp: 10*level,
-			maxHp: 10*level,
+			hp: 50*level,
+			maxHp: 50*level,
 			damage: Math.round(level/2),
 			difficulty: level,
 			arrayBullets: [],

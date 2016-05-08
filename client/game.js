@@ -148,7 +148,11 @@
 		});
 
 		socket.on('enemyUpdate', function(data){
-			enemy = data.enemy;
+			enemy = {
+				hp: data.enemyHp,
+				maxHp: data.enemyMaxHp,
+				name: data.enemyName
+			}
 		});
 
 		// update data when players join game room
@@ -177,7 +181,7 @@
 					var now = new Date().getTime(),
 					//in seconds
 					dt = (now - time)/1000;
-
+					console.log(dt);
 					time = now;
 
 					var player = players[keys[i]];
@@ -333,16 +337,6 @@
 			else{
 				var keys = Object.keys(players);
 
-				// Attack Circle Draw
-
-				for(var i = 0; i < attackCircles.length; i++){
-					ctx.fillStyle = 'rgba(' + user.color.r + ',' + user.color.b + ',' + user.color.g + ', .5)' ;
-					ctx.beginPath();
-					ctx.arc(attackCircles[i].pos.x, attackCircles[i].pos.y, attackCircles[i].radius, 0, Math.PI * 2, false);
-					ctx.fill();
-					ctx.closePath();
-				}
-
 				// Enemy Draw
 				ctx.fillStyle = "purple";
 				ctx.fillRect(300,50,40,40);
@@ -374,6 +368,26 @@
 					var drawCall = players[ keys[i] ];
 
 					if(drawCall.alive === true){
+						if(drawCall.name == user.name){
+							// Attack Circle Draw
+							for(var j = 0; j < attackCircles.length; j++){
+								if(drawCall.currentAttackRate == 0){
+									ctx.fillStyle = 'rgba(' + user.color.r + ',' + user.color.g + ',' + user.color.b + ', .5)' ;
+									ctx.beginPath();
+									ctx.arc(attackCircles[j].pos.x, attackCircles[j].pos.y, attackCircles[j].radius, 0, Math.PI * 2, false);
+									ctx.fill();
+									ctx.closePath();
+								}
+								else{
+									ctx.fillStyle = 'rgba(' + user.color.r + ',' + user.color.g + ',' + user.color.b + ', .2)' ;
+									ctx.beginPath();
+									ctx.arc(attackCircles[j].pos.x, attackCircles[j].pos.y, attackCircles[j].radius, 0, Math.PI * 2, false);
+									ctx.fill();
+									ctx.closePath();
+								}
+							}
+						}
+
 						ctx.lineWidth= 2;
 						// graze radius
 						ctx.strokeStyle = 'white';

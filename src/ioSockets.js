@@ -70,7 +70,9 @@ var onMsg = function(socket, io) {
 		gameRooms[socket.room].players[socket.name].currentAttackRate = gameRooms[socket.room].players[socket.name].attackRate;
 
 		io.sockets.in(socket.room).emit('enemyUpdate',{
-			enemy: gameRooms[socket.room].enemy
+			enemyHp: gameRooms[socket.room].enemy.hp,
+			enemyMaxHp: gameRooms[socket.room].enemy.maxHp,
+			enemyName: gameRooms[socket.room].enemy.name
 		});
 	});
 
