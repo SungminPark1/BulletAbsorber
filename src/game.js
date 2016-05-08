@@ -51,8 +51,8 @@ function createGame(data){
 			this.players[player.name].skill2Used = player.skill2Used;
 
 			
-			if(player.attacking === true){
-				this.enemy.hp -= 1;
+			if(player.damage != 0){
+				this.enemy.hp -= player.damage;
 				this.players[player.name].currentAttackRate = this.players[player.name].attackRate;
 			}
 			

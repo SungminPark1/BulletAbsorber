@@ -15,7 +15,7 @@
 	var arrayBullets = [];
 	var time;
 
-	var attacking = false;
+	var damage = false;
 	var updated = false;
 
 	function init() {
@@ -144,6 +144,11 @@
 		socket.on('update', function(data){
 			players = data.players;
 			arrayBullets = data.arrayBullets;
+			enemy = {
+				hp: data.enemyHp,
+				maxHp: data.enemyMaxHp,
+				name: data.enemyName
+			};
 			update();
 		});
 
@@ -187,6 +192,7 @@
 					var player = players[keys[i]];
 
 					updated = false;
+					damage = 0;
 
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_W] === true){
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_SHIFT] === true) user.pos.y += (-player.speed/2) * dt;
@@ -216,14 +222,12 @@
 								for(var i = 0; i<attackCircles.length; i++){
 									var distance = circlesIntersect(user.pos, attackCircles[i].pos);
 									if( distance < player.hitbox + attackCircles[i].radius){
+										attackCircles[i].velocity = getRandomUnitVector();
 										// calculate damage
 										var accuracy = 1 - distance / (player.hitbox + attackCircles[i].radius);
-										socket.emit('attack', {
-											damage:  Math.max(player.maxDamage * accuracy, player.minDamage)
-										});
+										damage = Math.max(player.maxDamage * accuracy, player.minDamage);
 									}
 								}
-
 							}
 							updated = true;
 						}
@@ -269,6 +273,7 @@
 						socket.emit('updatePlayer', {
 							name: player.name,
 							pos: user.pos,
+							damage: damage,
 							skill1Used: player.skill1Used,
 							skill2Used: player.skill2Used
 						});

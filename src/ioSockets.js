@@ -69,11 +69,6 @@ var onMsg = function(socket, io) {
 		gameRooms[socket.room].enemy.hp -= data.damage;
 		gameRooms[socket.room].players[socket.name].currentAttackRate = gameRooms[socket.room].players[socket.name].attackRate;
 
-		io.sockets.in(socket.room).emit('enemyUpdate',{
-			enemyHp: gameRooms[socket.room].enemy.hp,
-			enemyMaxHp: gameRooms[socket.room].enemy.maxHp,
-			enemyName: gameRooms[socket.room].enemy.name
-		});
 	});
 
 	updateRoom = function(room){
@@ -81,7 +76,10 @@ var onMsg = function(socket, io) {
 
 		io.sockets.in(room).emit('update', {
 			players: gameRooms[room].players,
-			arrayBullets: gameRooms[room].arrayBullets
+			arrayBullets: gameRooms[room].arrayBullets,
+			enemyHp: gameRooms[room].enemy.hp,
+			enemyMaxHp: gameRooms[room].enemy.maxHp,
+			enemyName: gameRooms[room].enemy.name
 		});
 	}
 };
