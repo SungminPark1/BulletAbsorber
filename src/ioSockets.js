@@ -45,6 +45,7 @@ var onMsg = function(socket, io) {
 			socket.emit('updateData', {
 				room: data.room,
 				players: gameRooms[socket.room].players,
+				enemy: gameRooms[socket.room].enemy,
 				arrayBullets: gameRooms[socket.room].arrayBullets,
 				started: gameRooms[socket.room].started
 			});
@@ -61,6 +62,16 @@ var onMsg = function(socket, io) {
 
 	socket.on('updatePlayer', function(data){
 		gameRooms[socket.room].updatePlayers(data);
+	});
+
+	socket.on('attack', function(data){
+		// make it into a game function so it can also detect if an enemy dies and can recreate the enemy?
+		gameRooms[socket.room].enemy.hp -= data.damage;
+		gameRooms[socket.room].players[socket.name].currentAttackRate = gameRooms[socket.room].players[socket.name].attackRate;
+
+		io.sockets.in(socket.room).emit('enemyUpdate',{
+			enemy: gameRooms[socket.room].enemy
+		});
 	});
 
 	updateRoom = function(room){

@@ -14,6 +14,7 @@
 	var arrayBullets = [];
 	var time;
 
+	var attacking = false;
 	var updated = false;
 
 	function init() {
@@ -146,10 +147,15 @@
 			update();
 		});
 
+		socket.on('enemyUpdate', function(data){
+			enemy = data.enemy;
+		});
+
 		// update data when players join game room
 		socket.on('updateData', function(data){
 			room = data.room;
 			players = data.players;
+			enemy = data.enemy;
 			arrayBullets = arrayBullets;
 			started = data.started;
 			isLobby = false;
@@ -173,33 +179,49 @@
 
 					time = now;
 
-					updated = false;
-
 					var player = players[keys[i]];
 
+					updated = false;
+
+					console.log(dt);
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_W] === true){
-						user.pos.y += -player.speed * dt;
+						if(myKeys.keydown[myKeys.KEYBOARD.KEY_SHIFT] === true) user.pos.y += (-player.speed/2) * dt;
+						else user.pos.y += -player.speed * dt;
+						updated = true;
 					}
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_A] === true){
-						user.pos.x += -player.speed * dt;
+						if(myKeys.keydown[myKeys.KEYBOARD.KEY_SHIFT] === true) user.pos.x += (-player.speed/2) * dt;
+						else user.pos.x += -player.speed * dt;
+						updated = true;
 					}
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_S] === true){
-						user.pos.y += player.speed * dt;
+						if(myKeys.keydown[myKeys.KEYBOARD.KEY_SHIFT] === true) user.pos.y += (player.speed/2) * dt;
+						else user.pos.y += player.speed * dt;
+						updated = true;
 					}
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_D] === true){
-						user.pos.x += player.speed * dt;
+						if(myKeys.keydown[myKeys.KEYBOARD.KEY_SHIFT] === true) user.pos.x += (player.speed/2) * dt;
+						else user.pos.x += player.speed * dt;
+						updated = true;
 					}
 
 					// players can only use skills when alive
 					if(player.alive === true){
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] === true){
-							player.skill1Used = true;
+							if(player.currentAttackRate == 0){
+								socket.emit('attack', {
+									damage: 3
+								});
+							}
+							updated = true;
 						}
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_K] === true){
 							player.skill1Used = true;
+							updated = true;
 						}
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_L] === true){
 							player.skill2Used = true;
+							updated = true;
 						}
 					}
 
@@ -208,13 +230,15 @@
 					user.pos.y = clamp(user.pos.y, 20, 490);
 
 					// if this client's user moves, send to server to update other clients
-					socket.emit('updatePlayer', {
-						name: player.name,
-						pos: user.pos,
-						skill1Used: player.skill1Used,
-						skill2Used: player.skill2Used
-					});
-					
+					if(updated === true){
+						socket.emit('updatePlayer', {
+							name: player.name,
+							pos: user.pos,
+							skill1Used: player.skill1Used,
+							skill2Used: player.skill2Used
+						});
+					}
+
 					draw();
 					return;
 				}
@@ -284,7 +308,12 @@
 
 				ctx.strokeStyle = "red";
 				ctx.beginPath();
-				ctx.arc(320, 70, 50 , 0, Math.PI * 2, false);
+				if(!enemy){
+					ctx.arc(320, 70, 50 , Math.PI/2 , Math.PI * 2 + Math.PI/2 , false);	
+				}
+				else{
+					ctx.arc(320, 70, 50 , Math.PI/2 , Math.PI * (enemy.hp / (enemy.maxHp/2)) + Math.PI/2 , false);
+				}
 				ctx.stroke();
 				ctx.closePath();
 
@@ -330,7 +359,14 @@
 					// exp bar
 					ctx.strokeStyle = 'rgb(255,255,0)';
 					ctx.beginPath();
-					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox+1, Math.PI/2, Math.PI * (drawCall.currentExp / (drawCall.exp/2)) + Math.PI/2, false);
+					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox+1, Math.PI/2, Math.PI * (drawCall.currentExp / drawCall.exp) + Math.PI/2, false);
+					ctx.stroke();
+					ctx.closePath();
+
+					// attack charge bar
+					ctx.strokeStyle = 'rgb(255,255,255)';
+					ctx.beginPath();
+					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox+1, Math.PI/2, -Math.PI * ( (drawCall.attackRate - drawCall.currentAttackRate) / drawCall.attackRate) + Math.PI/2, true);
 					ctx.stroke();
 					ctx.closePath();
 
@@ -400,9 +436,17 @@
 	ctx.restore();
 	}
 
+	function circlesIntersect(c1,c2){
+		var dx = c2.x - c1.x;
+		var dy = c2.y - c1.y;
+		var distance = Math.sqrt(dx*dx + dy*dy);
+		return distance;
+	}
+
 	// Keyboard stuff
 	var myKeys = {};
 	myKeys.KEYBOARD = {
+		"KEY_SHIFT": 16,
 		"KEY_W": 87,
 		"KEY_A": 65,
 		"KEY_S": 83,

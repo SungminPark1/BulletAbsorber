@@ -6,7 +6,7 @@
 		Hp - 2, 4, 6
 		Energy - 1, 2, 3
 		Graze Radius - .5, 1, 1.5
-		Attack Rate - 5, 10, 15
+		Attack Rate - 5, 15, 25
 		Max Damage - 2, 4, 6
 		Min Damage - 1, 2, 3
 		Speed - 2.5, 5, 7.5
@@ -93,24 +93,24 @@ var createFighter = function(name, color) {
 		levelUp: function(){
 			// 16 / 24 stars
 
-			this.maxHp += 2; // 2, 4, 6
+			this.maxHp += 2; // 1 star
 			this.hp = this.maxHp;
 
-			this.maxEnergy = Math.min((this.maxEnergy + 1), this.energyCap); // 1, 2, 3
+			this.maxEnergy = Math.min((this.maxEnergy + 1), this.energyCap); // 1 star
 
-			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap); //.5
+			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap); 
 
-			this.grazeRadius = Math.min((this.grazeRadius + 1), this.grazeRadiusCap); // .5, 1, 1.5
+			this.grazeRadius = Math.min((this.grazeRadius + 1), this.grazeRadiusCap); // 2 star
 
-			this.attackRate = Math.max((this.attackRate - 15), this.attackRateCap); // 5, 10, 15
+			this.attackRate = Math.max((this.attackRate - 25), this.attackRateCap); // 3 star
 
-			this.maxDamage += 6; // 2,4,6
+			this.maxDamage += 6; // 3 star
 
-			this.minDamage += 3; // 1,2,3
+			this.minDamage += 3; // 3 star
 
-			this.speed = Math.min((this.speed + 5), this.speedCap); // 2.5, 5, 7.5
+			this.speed = Math.min((this.speed + 5), this.speedCap); // 2 star
 
-			this.invul = Math.min((this.invul + 1), this.invulCap); // 1, 2, 3
+			this.invul = Math.min((this.invul + 1), this.invulCap); // 1 star
 
 			this.currentExp = 0;
 			this.exp += 10;
@@ -149,7 +149,7 @@ var createBomber = function(name, color) {
 		grazeRadius: 20,
 		grazeRadiusCap: 50,
 
-		currentAttackRate: 300,
+		currentAttackRate: 600,
 		attackRate: 600,
 		attackRateCap: 60,
 
@@ -223,9 +223,9 @@ var createBomber = function(name, color) {
 
 			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap); 
 
-			this.grazeRadius = Math.min((this.grazeRadius + .5), this.grazeRadiusCap); // 1 star
+			this.grazeRadius = Math.min((this.grazeRadius + 1), this.grazeRadiusCap); // 2 star
 
-			this.attackRate = Math.max((this.attackRate - 10), this.attackRateCap); // 2 star
+			this.attackRate = Math.max((this.attackRate - 5), this.attackRateCap); // 1 star
 
 			this.maxDamage += 4; // 2 star
 
@@ -334,24 +334,24 @@ var createSupplier = function(name, color) {
 		levelUp: function(){
 			// 13 stars
 			
-			this.maxHp += 2; // 2, 4, 6
+			this.maxHp += 2; // 1 star
 			this.hp = this.maxHp;
 
-			this.maxEnergy += 1; // 1, 2, 3
+			this.maxEnergy += 1; // 1 star
 
-			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap); //.5
+			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap); 
 
-			this.grazeRadius = Math.min((this.grazeRadius + 1.5), this.grazeRadiusCap); // .5, 1, 1.5
+			this.grazeRadius = Math.min((this.grazeRadius + 1.5), this.grazeRadiusCap); //3 star
 
-			this.attackRate = Math.max((this.attackRate - 5), this.attackRateCap); // 5, 10, 15
+			this.attackRate = Math.max((this.attackRate - 5), this.attackRateCap); // 1 star
 
-			this.maxDamage += 4; // 2,4,6
+			this.maxDamage += 4; // 2 star
 
-			this.minDamage += 1; // 1,2,3
+			this.minDamage += 1; // 1 star
 
-			this.speed = Math.min((this.speed + 7.5), this.speedCap); // 2.5, 5, 7.5
+			this.speed = Math.min((this.speed + 7.5), this.speedCap); // 3 star
 
-			this.invul = Math.min((this.invul + 1), this.invulCap); // 1, 2, 3
+			this.invul = Math.min((this.invul + 1), this.invulCap); // 1 star
 
 			this.expGain =  Math.min((this.expGain + .025), this.expGainCap);
 
@@ -440,26 +440,26 @@ var createAura = function(name, color) {
 			// 14 / 24 stars
 			// NEED TO ADD HEAL STR STAT
 			
-			this.maxHp += 2; // 2, 4, 6
+			this.maxHp += 2; // 1 star
 			this.hp = this.maxHp;
 
-			this.maxEnergy = Math.min((this.maxEnergy + 3), this.energyCap); // 1, 2, 3
+			this.maxEnergy = Math.min((this.maxEnergy + 3), this.energyCap); // 3 star
 
 			this.hitbox = Math.max((this.hitbox - .5), this.hitboxCap); //.5
 
-			this.grazeRadius = Math.min((this.grazeRadius + 1.5), this.grazeRadiusCap); // .5, 1, 1.5
+			this.grazeRadius = Math.min((this.grazeRadius + 1.5), this.grazeRadiusCap); // 3 star
 
-			this.attackRate = Math.max((this.attackRate - 5), this.attackRateCap); // 5, 10, 15
+			this.attackRate = Math.max((this.attackRate - 5), this.attackRateCap); // 1 star
 
-			this.maxDamage += 2; // 2,4,6
+			this.maxDamage += 2; // 1 star
 
-			this.minDamage += 1; // 1,2,3
+			this.minDamage += 1; // 1 star
 
-			this.speed = Math.min((this.speed + 5), this.speedCap); // 2.5, 5, 7.5
+			this.speed = Math.min((this.speed + 5), this.speedCap); // 2 star
 
-			this.invul = Math.min((this.invul + 2), this.invulCap); // 1, 2, 3
+			this.invul = Math.min((this.invul + 2), this.invulCap); // 2 star
 
-			this.hpRegen = Math.min((this.hpRegen + .025), this.hpRegenCap); // 1, 2, 3
+			this.hpRegen = Math.min((this.hpRegen + .025), this.hpRegenCap);
 
 			this.currentExp = 0;
 			this.exp += 10;

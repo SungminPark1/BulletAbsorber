@@ -49,6 +49,13 @@ function createGame(data){
 			this.players[player.name].pos = player.pos;
 			this.players[player.name].skill1Used = player.skill1Used;
 			this.players[player.name].skill2Used = player.skill2Used;
+
+			
+			if(player.attacking === true){
+				this.enemy.hp -= 1;
+				this.players[player.name].currentAttackRate = this.players[player.name].attackRate;
+			}
+			
 		},
 		startGame: function(){
 
@@ -100,8 +107,20 @@ function createGame(data){
 									player.reviveTime += 600; // increase the revive timer by 10 sec
 									player.reviveTimer = player.reviveTime; // dead however long their relive time is
 								}
-							}
-						}						
+
+							} // end if in hitbox
+						} // end if in graze			
+					} // end if hit / alive
+				} // end for loop
+
+				// charge basic attack
+				
+				if(player.hit <= 0 && player.alive === true){
+					if(player.currentAttackRate > 0){
+						player.currentAttackRate--;
+					}
+					else{
+						player.currentAttackRate = 0;
 					}
 				}
 				
