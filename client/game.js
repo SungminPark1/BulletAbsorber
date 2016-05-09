@@ -212,6 +212,8 @@
 					}
 
 					// players can only use skills when alive
+					console.log(previousSkillButtonDown);
+
 					if(player.alive === true && previousSkillButtonDown === false){
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] === true){
 							previousSkillButtonDown = true;
@@ -295,7 +297,10 @@
 						});
 					}
 
-					if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] === false && myKeys.keydown[myKeys.KEYBOARD.KEY_J] === false && myKeys.keydown[myKeys.KEYBOARD.KEY_L] === false){
+					if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] || myKeys.keydown[myKeys.KEYBOARD.KEY_K] || myKeys.keydown[myKeys.KEYBOARD.KEY_L]){
+						previousSkillButtonDown = true;
+					}
+					else{ 
 						previousSkillButtonDown = false;
 					}
 
