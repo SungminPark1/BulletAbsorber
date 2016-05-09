@@ -375,17 +375,6 @@
 				fillText(ctx, enemy.name , 525, 25, "15pt courier", "#ddd");
 				fillText(ctx, 'damage: ' + enemy.damage.toFixed(2) , 525, 45, "10pt courier", "#ddd");
 
-				ctx.strokeStyle = "red";
-				ctx.beginPath();
-				if(!enemy){
-					ctx.arc(320, 70, 50 , Math.PI/2 , Math.PI * 2 + Math.PI/2 , false);	
-				}
-				else{
-					ctx.arc(320, 70, 50 , Math.PI/2 , Math.PI * (enemy.hp / (enemy.maxHp/2)) + Math.PI/2 , false);
-				}
-				ctx.stroke();
-				ctx.closePath();
-
 				// bullet array draw
 				for(var i = 0; i<arrayBullets.length; i++){
 					if(arrayBullets[i].absorbed == false) ctx.fillStyle = "white";
@@ -491,13 +480,48 @@
 					ctx.fillRect(2+ i * 159,510, 159, 128);
 					ctx.strokeRect(2+ i * 159,510, 159, 128);
 					fillText(ctx, drawCall.name, 79 + i * 159 , 525, "15pt courier", "rgb(" + drawCall.color.r  +"," + drawCall.color.g + "," + drawCall.color.b + ")");
-					fillText(ctx, "Damage: " + drawCall.minDamage + "~" + drawCall.maxDamage,  79 + i * 159 , 550, "12pt courier", "#ddd");
-					ctx.strokeRect(30 + i*159, 575, 50, 50);
-					ctx.strokeRect(80 + i*159, 575, 50, 50);
-					fillText(ctx, "K", 55 + i * 159 , 600, "12pt courier", "#ddd");
-					fillText(ctx, "L", 105 + i * 159 , 600, "12pt courier", "#ddd");
+					fillText(ctx, "Damage: " + drawCall.minDamage + "~" + drawCall.maxDamage,  79 + i * 159 , 545, "12pt courier", "#ddd");
+					
+					if(drawCall.skill1Used && drawCall.energy > drawCall.skill1Cost){
+						ctx.save();
+						ctx.fillStyle = "rgb(255, 255, 255)";
+						ctx.fillRect(25 + i*159, 565, 50, 50);
+						ctx.restore();
+					}
+					else if(drawCall.energy > drawCall.skill1Cost ){
+						ctx.save();
+						ctx.fillStyle = "rgba(255, 255, 255, .5)";
+						ctx.fillRect(25 + i*159, 565, 50, 50);
+						ctx.restore();
+					}
+					ctx.strokeRect(25 + i*159, 565, 50, 50);
+
+					if(drawCall.skill2Used && drawCall.energy > drawCall.skill2Cost){
+						ctx.save();
+						ctx.fillStyle = "rgb(255, 255, 255)";
+						ctx.fillRect(85 + i*159, 565, 50, 50);
+						ctx.restore();
+					}
+					else if(drawCall.energy > drawCall.skill2Cost ){
+						ctx.save();
+						ctx.fillStyle = "rgba(255, 255, 255, .5)";
+						ctx.fillRect(85 + i*159, 565, 50, 50);
+						ctx.restore();
+					}
+					ctx.strokeRect(85 + i*159, 565, 50, 50);
+					fillText(ctx, "K", 50 + i * 159 , 628, "12pt courier", "#ddd");
+					fillText(ctx, "L", 110 + i * 159 , 628, "12pt courier", "#ddd");
 				}
 				
+				//bottom box
+				ctx.strokeRect(2,510, 636, 128);
+
+				ctx.strokeStyle = "red";
+				ctx.beginPath();
+				ctx.arc(320, 70, 50 , Math.PI/2 , Math.PI * (enemy.hp / (enemy.maxHp/2)) + Math.PI/2 , false);
+				ctx.stroke();
+				ctx.closePath();
+
 				// draw hud				
 				ctx.fillStyle = 'white';
 				document.querySelector('#createRoom').style.visibility = 'hidden';

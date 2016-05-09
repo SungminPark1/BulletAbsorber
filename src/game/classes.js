@@ -98,7 +98,7 @@ var createFighter = function(name, color) {
 			if(this.energy < this.skill2Cost){
 			}
 			else{
-				enemy.hp -= (this.maxDamage + (this. minDamage/2)) * (this.energy/5);
+				enemy.hp -= (this.maxDamage + (this.energy)) * (this.energy/5);
 
 				this.energy = 0;
 			}
@@ -181,7 +181,7 @@ var createBomber = function(name, color) {
 		currentExp: 0,
 		exp: 10,
 
-		skill1Cost: 15,
+		skill1Cost: 10,
 		skill1Used: false,
 		skill1: function(players, arrayBullets, enemy){
 			if(this.energy < this.skill1Cost){
@@ -199,7 +199,7 @@ var createBomber = function(name, color) {
 					return bullet.active;
 				});
 
-				enemy.hp -= this.minDamage;
+				enemy.hp -= this.maxDamage;
 
 				this.energy -= this.skill1Cost;
 				this.skill1Used = false;
@@ -214,7 +214,7 @@ var createBomber = function(name, color) {
 			}
 			else{
 				for(var i = 0; i<arrayBullets.length; i++){
-					if(circlesIntersect(this.pos, arrayBullets[i].pos) < (this.hitbox + ( this.grazeRadius * ( this.energy/10 ) ) + arrayBullets[i].radius)){
+					if(circlesIntersect(this.pos, arrayBullets[i].pos) < (this.hitbox + ( this.grazeRadius * ( this.energy/5 ) ) + arrayBullets[i].radius)){
 						arrayBullets[i].active = false;
 					}
 				}
@@ -306,13 +306,14 @@ var createSupplier = function(name, color) {
 		currentExp: 0,
 		exp: 10,
 
-		expGain: .1,
+		expGain: .02,
 		expGainCap: .5,
 		skill1Cost: 0,
 		skill1Used: false,
 		skill1: function(players, arrayBullets, enemy){
 			if(this.energy <= 0){
 				this.skill1Used = false;
+				this.energy = 0;
 			}
 			else{
 				var keys = Object.keys(players);
@@ -325,17 +326,18 @@ var createSupplier = function(name, color) {
 					}
 				}
 
-				this.energy--;
+				this.energy -= .1;
 			}	
 		},
 
-		energyRegen: .1,
+		energyRegen: .02,
 		energyRegenCap: .5,
 		skill2Cost: 0,
 		skill2Used: false,
 		skill2: function(players, arrayBullets, enemy){
 			if(this.energy <= 0){
 				this.skill2Used = false;
+				this.energy = 0;
 			}
 			else{
 				var keys = Object.keys(players);
@@ -346,7 +348,7 @@ var createSupplier = function(name, color) {
 					}
 				}
 
-				this.energy--;
+				this.energy -= .1;
 			}
 		},
 
@@ -373,7 +375,7 @@ var createSupplier = function(name, color) {
 
 			this.invul = Math.min((this.invul + 1), this.invulCap); // 1 star
 
-			this.expGain =  Math.min((this.expGain + .025), this.expGainCap);
+			this.expGain =  Math.min((this.expGain + .01), this.expGainCap);
 
 			this.energyRegen =  Math.min((this.energyRegen + .02), this.energyRegenCap);
 
@@ -410,7 +412,7 @@ var createAura = function(name, color) {
 		hitbox: 22.5,
 		hitboxCap: 10,
 
-		grazeRadius: 10,
+		grazeRadius: 13,
 		grazeRadiusCap: 30,
 
 		currentAttackRate: 600,
@@ -431,13 +433,14 @@ var createAura = function(name, color) {
 		currentExp: 0,
 		exp: 10,
 
-		hpRegen: .1,
+		hpRegen: .02,
 		hpRegenCap: .5,
 		skill1Cost: 0,
 		skill1Used: false,
 		skill1: function(players, arrayBullets, enemy){
 			if(this.energy <= 0){
 				this.skill1Used = false;
+				this.energy = 0;
 			}
 			else{
 				var keys = Object.keys(players);
@@ -446,19 +449,20 @@ var createAura = function(name, color) {
 					players[keys[i]].hp = Math.min((players[keys[i]].hp + this.hpRegen), players[keys[i]].maxHp);
 				}
 
-				this.energy--;
+				this.energy -= .1;
 			}
 		},
-		damageOverTime: .5,
+		damageOverTime: .1,
 		skill2Cost: 0,
 		skill2Used: false,
 		skill2: function(players, arrayBullets, enemy){
 			if(this.energy <= 0){
 				this.skill2Used = false;
+				this.energy = 0;
 			}
 			else{
 				enemy.hp -= this.damageOverTime;
-				this.energy--;
+				this.energy -= .1;
 			}
 		},
 
@@ -485,9 +489,9 @@ var createAura = function(name, color) {
 
 			this.invul = Math.min((this.invul + 2), this.invulCap); // 2 star
 
-			this.hpRegen = Math.min((this.hpRegen + .025), this.hpRegenCap);
+			this.hpRegen = Math.min((this.hpRegen + .01), this.hpRegenCap);
 
-			this.damageOverTime += .25;
+			this.damageOverTime += .1;
 
 			this.currentExp = 0;
 			this.exp += 10;
