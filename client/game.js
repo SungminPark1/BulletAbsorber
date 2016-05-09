@@ -18,6 +18,8 @@
 	var damage = false;
 	var updated = false;
 
+	var previousSkillButtonDown = false;
+
 	function init() {
 		socket = io.connect();
 		canvas = document.querySelector('canvas');
@@ -147,17 +149,10 @@
 			enemy = {
 				hp: data.enemyHp,
 				maxHp: data.enemyMaxHp,
+				damage: data.enemyDamage,
 				name: data.enemyName
 			};
 			update();
-		});
-
-		socket.on('enemyUpdate', function(data){
-			enemy = {
-				hp: data.enemyHp,
-				maxHp: data.enemyMaxHp,
-				name: data.enemyName
-			}
 		});
 
 		// update data when players join game room
@@ -179,14 +174,15 @@
 
 	// update
 	function update(){
-		if(isLobby === false){
+		if(started === false){
 			var keys = Object.keys(players);
+			// Find the clients username and update only his data
 			for(var i = 0; i < keys.length; i++){
 				if(keys[i] == user.name){
 					var now = new Date().getTime(),
 					//in seconds
 					dt = (now - time)/1000;
-					console.log(dt);
+					//console.log(dt);
 					time = now;
 
 					var player = players[keys[i]];
@@ -216,8 +212,10 @@
 					}
 
 					// players can only use skills when alive
-					if(player.alive === true){
+					if(player.alive === true && previousSkillButtonDown === false){
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] === true){
+							previousSkillButtonDown = true;
+
 							if(player.currentAttackRate == 0){
 								for(var i = 0; i<attackCircles.length; i++){
 									var distance = circlesIntersect(user.pos, attackCircles[i].pos);
@@ -225,18 +223,36 @@
 										attackCircles[i].velocity = getRandomUnitVector();
 										// calculate damage
 										var accuracy = 1 - distance / (player.hitbox + attackCircles[i].radius);
-										damage = Math.max(player.maxDamage * accuracy, player.minDamage);
+										damage += Math.max(player.maxDamage * accuracy, player.minDamage);
 									}
 								}
 							}
 							updated = true;
 						}
+
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_K] === true){
-							player.skill1Used = true;
+							previousSkillButtonDown = true;
+
+							if(player.skill1Used === false){
+								player.skill1Used = true;
+							}
+							else{
+								player.skill1Used = false;
+							}
+
 							updated = true;
 						}
+
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_L] === true){
-							player.skill2Used = true;
+							previousSkillButtonDown = true;
+
+							if(player.skill2Used === false){
+								player.skill2Used = true;
+							}
+							else{
+								player.skill2Used = false;
+							}
+
 							updated = true;
 						}
 					}
@@ -277,6 +293,10 @@
 							skill1Used: player.skill1Used,
 							skill2Used: player.skill2Used
 						});
+					}
+
+					if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] === false && myKeys.keydown[myKeys.KEYBOARD.KEY_J] === false && myKeys.keydown[myKeys.KEYBOARD.KEY_L] === false){
+						previousSkillButtonDown = false;
 					}
 
 					draw();
@@ -345,6 +365,10 @@
 				// Enemy Draw
 				ctx.fillStyle = "purple";
 				ctx.fillRect(300,50,40,40);
+
+				ctx.textAlign = "left";
+				fillText(ctx, enemy.name , 525, 25, "15pt courier", "#ddd");
+				fillText(ctx, 'damage: ' + enemy.damage.toFixed(2) , 525, 45, "10pt courier", "#ddd");
 
 				ctx.strokeStyle = "red";
 				ctx.beginPath();

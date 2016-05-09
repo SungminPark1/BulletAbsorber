@@ -1,7 +1,7 @@
 var bullet = require('./bullet.js'); 
 var victor = require('victor');
 
-var createEnemy = function(type, level){
+var createEnemy = function(type, level, playerNum){
 	var enemy;
 
 	if(type == 1){
@@ -9,8 +9,8 @@ var createEnemy = function(type, level){
 			name: "Sprayer",
 			hp: 50*level,
 			maxHp: 50*level,
-			damage: Math.round(level/2),
-			difficulty: level,
+			damage: level/playerNum/2,
+			difficulty: level/playerNum,
 			arrayBullets: [],
 
 			attackPattern: 0,

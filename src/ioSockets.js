@@ -79,6 +79,7 @@ var onMsg = function(socket, io) {
 			arrayBullets: gameRooms[room].arrayBullets,
 			enemyHp: gameRooms[room].enemy.hp,
 			enemyMaxHp: gameRooms[room].enemy.maxHp,
+			enemyDamage: gameRooms[room].enemy.damage,
 			enemyName: gameRooms[room].enemy.name
 		});
 	}

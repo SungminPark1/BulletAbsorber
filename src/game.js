@@ -11,6 +11,7 @@ function createGame(data){
 		started: false,
 		players: {},
 		enemy: null,
+		enemiesKilled: 0,
 		arrayBullets: [],
 		time: new Date().getTime(),
 		addPlayer: function(player){
@@ -51,7 +52,7 @@ function createGame(data){
 			this.players[player.name].skill2Used = player.skill2Used;
 
 			
-			if(player.damage != 0){
+			if(player.damage != 0 && this.players[player.name].currentAttackRate <= 0){
 				this.enemy.hp -= player.damage;
 				this.players[player.name].currentAttackRate = this.players[player.name].attackRate;
 			}
@@ -139,13 +140,33 @@ function createGame(data){
 			// in seconds
 			var dt = (now - this.time) / 1000;
 			this.time = now;
-			// game lobby if false
+			// CHANGE TO FALSE ONCE GAME LOBBY IS MADE
 			if(this.started === true){
 
 			}
 			else{
-				if(!this.enemy || this.enemy.hp <= 0){
-					this.enemy = enemies.createEnemy(1,1);
+				if(!this.enemy){
+					this.enemy = enemies.createEnemy(1,1, 1);
+				}
+				else if(this.enemy.hp <= 0){
+					this.enemiesKilled++;
+
+					var keys = Object.keys(this.players);
+					var enemyLevel = this.enemiesKilled;
+					var playerNum = keys.length;
+
+
+					for(var i = 0; i< keys.length; i++){
+						var player = this.players[ keys[i] ];
+						enemyLevel += player.level;
+						player.currentExp += (player.exp * .25);
+						player.hp = Math.min(player.hp + player.maxHp *.2, player.maxHp);
+
+						// level up
+						if(player.currentExp >= player.exp) player.levelUp();
+					}
+					// Scale enemy based on player's level
+					this.enemy = enemies.createEnemy(1,enemyLevel, playerNum);
 				}
 				else{
 					this.enemy.attack1(dt);
