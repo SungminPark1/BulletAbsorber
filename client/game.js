@@ -17,7 +17,7 @@
 
 	var damage = false;
 	var updated = false;
-
+	var viewControls = true;
 	var previousSkillButtonDown = false;
 
 	function init() {
@@ -297,7 +297,15 @@
 						});
 					}
 
-					if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] || myKeys.keydown[myKeys.KEYBOARD.KEY_K] || myKeys.keydown[myKeys.KEYBOARD.KEY_L]){
+					if(myKeys.keydown[myKeys.KEYBOARD.KEY_C] === true && previousSkillButtonDown === false){
+						previousSkillButtonDown = true;
+
+						if(viewControls) viewControls = false;
+						else viewControls = true;
+
+					}
+
+					if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] || myKeys.keydown[myKeys.KEYBOARD.KEY_K] || myKeys.keydown[myKeys.KEYBOARD.KEY_L] || myKeys.keydown[myKeys.KEYBOARD.KEY_C]){
 						previousSkillButtonDown = true;
 					}
 					else{ 
@@ -395,6 +403,9 @@
 							// Attack Circle Draw
 							for(var j = 0; j < attackCircles.length; j++){
 								if(drawCall.currentAttackRate == 0){
+									ctx.textAlign = "center";
+									ctx.textBaseline = "middle";
+									fillText(ctx, "ATTACK!", attackCircles[j].pos.x, attackCircles[j].pos.y, "10pt courier", "#fff");
 									ctx.fillStyle = 'rgba(' + user.color.r + ',' + user.color.g + ',' + user.color.b + ', .5)' ;
 									ctx.beginPath();
 									ctx.arc(attackCircles[j].pos.x, attackCircles[j].pos.y, attackCircles[j].radius, 0, Math.PI * 2, false);
@@ -491,7 +502,17 @@
 					else if(drawCall.energy > drawCall.skill1Cost ){
 						ctx.save();
 						ctx.fillStyle = "rgba(255, 255, 255, .5)";
+						ctx.strokeStyle = '#ddd'
+						ctx.lineWidth = 1;
 						ctx.fillRect(25 + i*159, 565, 50, 50);
+
+						if(drawCall.type == 'bomber'){
+							ctx.beginPath();
+							ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + (drawCall.grazeRadius * ( drawCall.energy/5)), 0, Math.PI * 2, false);
+							ctx.stroke();
+							ctx.closePath();
+						}
+
 						ctx.restore();
 					}
 					ctx.strokeRect(25 + i*159, 565, 50, 50);
@@ -527,10 +548,41 @@
 				document.querySelector('#createRoom').style.visibility = 'hidden';
 				document.querySelector('#joinRoom').style.visibility = 'hidden';
 				document.querySelector('#instructions').style.visibility = 'hidden';
-				ctx.textAlign = "center";
+				ctx.textAlign = "left";
 				ctx.textBaseline = "middle";
-				fillText(ctx, "Room: " + room, 50, 25, "10pt courier", "#ddd");
-				fillText(ctx, "WASD to move", 640/2, 500, "15pt courier", "#ddd");
+				fillText(ctx, "Room: " + room, 10, 20, "10pt courier", "#ddd");
+				fillText(ctx, "View Controls - 'C'", 10, 35, "10pt courier", "#ddd");
+				if(viewControls){
+					fillText(ctx, "Move - WASD", 10, 380, "12pt courier", "#ddd");
+					fillText(ctx, "Reduce Speed - Shift", 10, 400, "12pt courier", "#ddd");
+					fillText(ctx, "Attack - J", 10, 420, "12pt courier", "#ddd");
+					fillText(ctx, "Skill 1 - K", 10, 440, "12pt courier", "#ddd");
+					if(user.type == 'fighter'){
+						fillText(ctx, "Finisher - 5 Energy", 15, 455, "10pt courier", "#ddd");
+					}
+					else if (user.type == 'bomber'){
+						fillText(ctx, "Focused Bomb - 10 Energy", 15, 455, "10pt courier", "#ddd");
+					}
+					else if( user.type == 'supplier'){
+						fillText(ctx, "Exp Generator - 15 Energy/per sec", 15, 455, "10pt courier", "#ddd");
+					}
+					else if( user.type == 'aura'){
+						fillText(ctx, "Healing Aura - 15 Energy/per sec", 15, 455, "10pt courier", "#ddd");
+					}
+					fillText(ctx, "Skill 2 - L", 10, 480, "12pt courier", "#ddd");
+					if(user.type == 'fighter'){
+						fillText(ctx, "Judgement - +10 Energy", 15, 495, "10pt courier", "#ddd");
+					}
+					else if (user.type == 'bomber'){
+						fillText(ctx, "Barrier - +15 Energy", 15, 495, "10pt courier", "#ddd");
+					}
+					else if( user.type == 'supplier'){
+						fillText(ctx, "Energy Regen - 15 Energy/per sec", 15, 495, "10pt courier", "#ddd");
+					}
+					else if( user.type == 'aura'){
+						fillText(ctx, "Burning Aura - 15 Energy/per sec", 15, 495, "10pt courier", "#ddd");
+					}
+				}
 			}
 		}
 	}
@@ -576,6 +628,7 @@
 	var myKeys = {};
 	myKeys.KEYBOARD = {
 		"KEY_SHIFT": 16,
+		"KEY_C": 67,
 		"KEY_W": 87,
 		"KEY_A": 65,
 		"KEY_S": 83,
