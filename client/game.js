@@ -182,7 +182,7 @@
 					var now = new Date().getTime(),
 					//in seconds
 					dt = (now - time)/1000;
-					//console.log(dt);
+
 					time = now;
 
 					var player = players[keys[i]];
@@ -212,7 +212,6 @@
 					}
 
 					// players can only use skills when alive
-					console.log(previousSkillButtonDown);
 
 					if(player.alive === true && previousSkillButtonDown === false){
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] === true){
@@ -312,7 +311,7 @@
 						previousSkillButtonDown = false;
 					}
 
-					draw();
+					draw(dt);
 					return;
 				}
 			}
@@ -320,7 +319,7 @@
 	}
 
 	// draw other client's object
-	function draw(){
+	function draw(dt){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 		if(isLobby === true){
@@ -553,6 +552,7 @@
 				fillText(ctx, "Room: " + room, 10, 20, "10pt courier", "#ddd");
 				fillText(ctx, "View Controls - 'C'", 10, 35, "10pt courier", "#ddd");
 				if(viewControls){
+					fillText(ctx, 'dt: ' + dt.toFixed(3), 10, 60, "10pt courier", "#ddd");
 					fillText(ctx, "Move - WASD", 10, 380, "12pt courier", "#ddd");
 					fillText(ctx, "Reduce Speed - Shift", 10, 400, "12pt courier", "#ddd");
 					fillText(ctx, "Attack - J", 10, 420, "12pt courier", "#ddd");
