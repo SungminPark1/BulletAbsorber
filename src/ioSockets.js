@@ -23,6 +23,7 @@ var onMsg = function(socket, io) {
 			// emit data back
 			io.sockets.in(data.room).emit('updateData', {
 				room: data.room,
+				enemy: gameRooms[socket.room].enemy,
 				players: gameRooms[socket.room].players,
 				arrayBullets: gameRooms[socket.room].arrayBullets,
 				started: gameRooms[socket.room].started
@@ -80,7 +81,11 @@ var onMsg = function(socket, io) {
 			enemyHp: gameRooms[room].enemy.hp,
 			enemyMaxHp: gameRooms[room].enemy.maxHp,
 			enemyDamage: gameRooms[room].enemy.damage,
-			enemyName: gameRooms[room].enemy.name
+			enemyName: gameRooms[room].enemy.name,
+			enemyCurrentAttackDur:gameRooms[room].enemy.currentAttackDur,
+			enemyAttackDur:gameRooms[room].enemy.attackDur,
+			enemyCurrentRestDur:gameRooms[room].enemy.currentRestDur,
+			enemyRestDur:gameRooms[room].enemy.restDur
 		});
 	}
 };

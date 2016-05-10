@@ -150,8 +150,13 @@
 				hp: data.enemyHp,
 				maxHp: data.enemyMaxHp,
 				damage: data.enemyDamage,
-				name: data.enemyName
+				name: data.enemyName,
+				currentAttackDur: data.enemyCurrentAttackDur,
+				attackDur: data.enemyAttackDur,
+				currentRestDur: data.enemyCurrentRestDur,
+				restDur: data.enemyRestDur
 			};
+
 			update();
 		});
 
@@ -482,7 +487,7 @@
 					ctx.fill();
 					ctx.closePath();
 
-
+					// Players Stat/Skill HUD
 					ctx.fillStyle = "rgba(0,0,0,.5)";
 					ctx.strokeStyle = "white";
 					ctx.textAlign = "center";
@@ -531,16 +536,32 @@
 					ctx.strokeRect(85 + i*159, 565, 50, 50);
 					fillText(ctx, "K", 50 + i * 159 , 628, "12pt courier", "#ddd");
 					fillText(ctx, "L", 110 + i * 159 , 628, "12pt courier", "#ddd");
-				}
+				} // End of player related draw
 				
 				//bottom box
 				ctx.strokeRect(2,510, 636, 128);
 
+				// enemy hp and attack duration
 				ctx.strokeStyle = "red";
 				ctx.beginPath();
 				ctx.arc(320, 70, 50 , Math.PI/2 , Math.PI * (enemy.hp / (enemy.maxHp/2)) + Math.PI/2 , false);
 				ctx.stroke();
 				ctx.closePath();
+
+				ctx.strokeStyle = "white";
+				ctx.fillStyle = "rgba(255, 255, 255, .5)";
+				console.log(enemy);
+				if(enemy.currentRestDur <= 0){
+
+					fillText(ctx, "Enemy is attacking!" , 320, 460, "10pt courier", "#ddd");
+					ctx.strokeRect(270,480, 100, 10);
+					ctx.fillRect(270,480, (100 * enemy.currentAttackDur/enemy.attackDur), 10);
+				}
+				else{
+					fillText(ctx, "Enemy is charge attack!" , 320, 460, "10pt courier", "#ddd");
+					ctx.strokeRect(270,480, 100, 10);
+					ctx.fillRect(270,480, 100 - (100* enemy.currentRestDur/enemy.restDur), 10);
+				}
 
 				// draw hud				
 				ctx.fillStyle = 'white';

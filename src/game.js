@@ -148,6 +148,7 @@ function createGame(data){
 				if(!this.enemy){
 					this.enemy = enemies.createEnemy(1,1, 1);
 				}
+				// if enemy is dead
 				else if(this.enemy.hp <= 0){
 					this.enemiesKilled++;
 
@@ -169,8 +170,10 @@ function createGame(data){
 					this.enemy = enemies.createEnemy(1,enemyLevel, playerNum);
 				}
 				else{
-					this.enemy.attack1(dt);
+					
+					this.enemy.updateEnemy(dt);
 					this.arrayBullets = this.enemy.arrayBullets;
+
 
 					this.checkCollision();
 
