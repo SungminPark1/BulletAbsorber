@@ -13,7 +13,7 @@ function create(x, y, radius, speedx, speedy, color){
 			this.active = this.active && this.inBounds(this.pos.x, this.pos.y);
 		},
 		inBounds: function(x,y){
-			if(x <= -100 || x > 740 || y <= -100 || y > 740){
+			if(x <= -50 || x > 690 || y <= -50 || y > 690){
 				return false;
 			}
 			else{

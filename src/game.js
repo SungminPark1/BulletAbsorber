@@ -147,6 +147,7 @@ function createGame(data){
 			else{
 				if(!this.enemy){
 					this.enemy = enemies.createEnemy(1,1, 1);
+					this.enemy.attackPattern = Math.floor(Math.random()*3);
 				}
 				// if enemy is dead
 				else if(this.enemy.hp <= 0){
@@ -168,9 +169,10 @@ function createGame(data){
 					}
 					// Scale enemy based on player's level
 					this.enemy = enemies.createEnemy(1,enemyLevel, playerNum);
+					this.enemy.attackPattern = Math.floor(Math.random()*3);
 				}
 				else{
-					
+
 					this.enemy.updateEnemy(dt);
 					this.arrayBullets = this.enemy.arrayBullets;
 
