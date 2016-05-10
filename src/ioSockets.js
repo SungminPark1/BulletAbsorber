@@ -78,6 +78,7 @@ var onMsg = function(socket, io) {
 		io.sockets.in(room).emit('update', {
 			players: gameRooms[room].players,
 			arrayBullets: gameRooms[room].arrayBullets,
+			dt: gameRooms[room].dt,
 			enemyHp: gameRooms[room].enemy.hp,
 			enemyMaxHp: gameRooms[room].enemy.maxHp,
 			enemyDamage: gameRooms[room].enemy.damage,

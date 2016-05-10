@@ -14,6 +14,7 @@ function createGame(data){
 		enemiesKilled: 0,
 		arrayBullets: [],
 		time: new Date().getTime(),
+		dt: 0,
 		addPlayer: function(player){
 			var color = {};
 			if(Object.keys(this.players).length == 0){
@@ -138,7 +139,8 @@ function createGame(data){
 			var now = new Date().getTime();
 
 			// in seconds
-			var dt = (now - this.time) / 1000;
+			this.dt = (now - this.time) / 1000;
+
 			this.time = now;
 			// CHANGE TO FALSE ONCE GAME LOBBY IS MADE
 			if(this.started === true){
@@ -173,7 +175,7 @@ function createGame(data){
 				}
 				else{
 
-					this.enemy.updateEnemy(dt);
+					this.enemy.updateEnemy(this.dt);
 					this.arrayBullets = this.enemy.arrayBullets;
 
 

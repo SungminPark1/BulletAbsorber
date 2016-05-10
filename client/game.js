@@ -13,7 +13,6 @@
 	var attackCircles = [];
 	var enemy = {};
 	var arrayBullets = [];
-	var time;
 
 	var damage = false;
 	var updated = false;
@@ -157,7 +156,7 @@
 				restDur: data.enemyRestDur
 			};
 
-			update();
+			update(data.dt);
 		});
 
 		// update data when players join game room
@@ -178,17 +177,12 @@
 	}
 
 	// update
-	function update(){
+	function update(dt){
 		if(started === false){
 			var keys = Object.keys(players);
 			// Find the clients username and update only his data
 			for(var i = 0; i < keys.length; i++){
 				if(keys[i] == user.name){
-					var now = new Date().getTime(),
-					//in seconds
-					dt = (now - time)/1000;
-
-					time = now;
 
 					var player = players[keys[i]];
 
