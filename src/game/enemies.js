@@ -79,7 +79,6 @@ var createEnemy = function(type, level, playerNum){
 						this.currentAttackDur = this.attackDur;
 						this.currentRestDur = this.restDur;
 						this.attackPattern = Math.floor(Math.random()*3);
-						//console.log(this.attackPattern);
 					}
 				}
 				else{

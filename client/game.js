@@ -550,7 +550,6 @@
 
 				ctx.strokeStyle = "white";
 				ctx.fillStyle = "rgba(255, 255, 255, .5)";
-				console.log(enemy);
 				if(enemy.currentRestDur <= 0){
 
 					fillText(ctx, "Enemy is attacking!" , 320, 460, "10pt courier", "#ddd");
