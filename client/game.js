@@ -18,6 +18,7 @@
 	var updated = false;
 	var viewControls = true;
 	var previousSkillButtonDown = false;
+	var playerType = 0;
 
 	function init() {
 		socket = io.connect();
@@ -142,7 +143,7 @@
 		});
 
 		// updates player movements & bullets
-		socket.on('update', function(data){
+		socket.on('updateGame', function(data){
 			players = data.players;
 			arrayBullets = data.arrayBullets;
 			enemy = {
@@ -159,6 +160,23 @@
 			update(data.dt);
 		});
 
+		// update game lobby
+		socket.on('updateGameLobby', function(data){
+			players = data.players;
+
+			update(0);
+		});
+
+		// update game lobby
+		socket.on('starting', function(data){
+			started = data.start;
+			players = data.players;
+			var keys = Object.keys(players);
+			for(var i = 0; i < keys.length; i++){
+				if(keys[i] == user.name)user = players[keys[i]];
+			}
+		});
+
 		// update data when players join game room
 		socket.on('updateData', function(data){
 			room = data.room;
@@ -171,14 +189,13 @@
 			for(var i = 0; i < keys.length; i++){
 				if(keys[i] == user.name)user = players[keys[i]];
 			}
-			time = new Date().getTime();
 			draw();
 		});
 	}
 
 	// update
 	function update(dt){
-		if(started === false){
+		if(started === true){
 			var keys = Object.keys(players);
 			// Find the clients username and update only his data
 			for(var i = 0; i < keys.length; i++){
@@ -315,6 +332,63 @@
 				}
 			}
 		}
+		else{
+			var keys = Object.keys(players);
+			// Find the clients username and update only his data
+			for(var i = 0; i < keys.length; i++){
+				if(keys[i] == user.name){
+					var player = players[keys[i]];
+					updated = false;
+
+					if(user.ready == false){
+						if(myKeys.keydown[myKeys.KEYBOARD.KEY_W] === true && previousSkillButtonDown === false){
+							playerType--;
+							if(playerType < 0){
+								playerType = 3;
+							}
+							previousSkillButtonDown = true;
+							updated = true;
+						}
+						if(myKeys.keydown[myKeys.KEYBOARD.KEY_S] === true && previousSkillButtonDown === false){
+							playerType++;
+							if(playerType > 3){
+								playerType = 0;
+							}
+							previousSkillButtonDown = true;
+							updated = true;
+						}
+					}
+
+					if(myKeys.keydown[myKeys.KEYBOARD.KEY_J] === true && previousSkillButtonDown === false){
+						user.ready = true;
+						updated = true;
+					}
+					if(myKeys.keydown[myKeys.KEYBOARD.KEY_K] === true && previousSkillButtonDown === false){
+						user.ready = false;
+						updated = true;
+					}
+
+					if(myKeys.keydown[myKeys.KEYBOARD.KEY_W] || myKeys.keydown[myKeys.KEYBOARD.KEY_S] || myKeys.keydown[myKeys.KEYBOARD.KEY_J] || myKeys.keydown[myKeys.KEYBOARD.KEY_K]){
+						previousSkillButtonDown = true;
+					}
+					else{ 
+						previousSkillButtonDown = false;
+					}
+					
+
+
+					if(updated === true){
+						socket.emit('updateGameLobby', {
+							type: playerType,
+							ready: user.ready
+						});
+					}
+
+					draw(dt);
+					return;
+				}
+			}
+		}
 	}
 
 	// draw other client's object
@@ -335,42 +409,11 @@
 
 		}
 		else{
+			document.querySelector('#createRoom').style.visibility = 'hidden';
+			document.querySelector('#joinRoom').style.visibility = 'hidden';
+			document.querySelector('#instructions').style.visibility = 'hidden';
+
 			if(started === true){
-				var keys = Object.keys(players);
-
-				for(var i = 0; i < keys.length; i++){
-					var drawCall = players[ keys[i] ];
-					if(drawCall.hit > 0){
-						ctx.fillStyle = "rgb(" + (255 - drawCall.color.r) + ", " + (255 -drawCall.color.g) + ", " + (255 -drawCall.color.b) + ")";
-					}	
-					else{		
-						ctx.fillStyle = "rgb(" + drawCall.color.r + ", " + drawCall.color.g + ", " + drawCall.color.b + ")";
-					}
-					ctx.beginPath();
-					ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.radius, 0, Math.PI * 2, false);
-					ctx.fill();
-					ctx.stroke();
-					ctx.closePath();
-					if(drawCall.name == user.name){
-						currentScore = drawCall.score;
-						if(highScore < currentScore){
-							highScore = currentScore;
-						}
-						document.querySelector('#highScore').innerHTML = 'High Score: ' + highScore;
-						document.querySelector('#currentScore').innerHTML = 'Current Score: ' + currentScore;
-						document.querySelector('#score').value = highScore;
-					}
-				}
-
-				for(var i = 0; i<arrayBullets.length; i++){
-					ctx.fillStyle = 'white';
-					ctx.beginPath();
-					ctx.arc(arrayBullets[i].pos.x, arrayBullets[i].pos.y, arrayBullets[i].radius, 0, Math.PI*2, false);
-					ctx.fill();
-					ctx.closePath();
-				}
-			}
-			else{
 				var keys = Object.keys(players);
 
 				// Enemy Draw
@@ -418,7 +461,7 @@
 									ctx.closePath();
 								}
 							}
-						}
+						}// end attack circles
 
 						ctx.lineWidth= 2;
 						// graze radius
@@ -504,13 +547,6 @@
 						ctx.lineWidth = 1;
 						ctx.fillRect(25 + i*159, 565, 50, 50);
 
-						if(drawCall.type == 'bomber'){
-							ctx.beginPath();
-							ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + (drawCall.grazeRadius * ( drawCall.energy/5)), 0, Math.PI * 2, false);
-							ctx.stroke();
-							ctx.closePath();
-						}
-
 						ctx.restore();
 					}
 					ctx.strokeRect(25 + i*159, 565, 50, 50);
@@ -526,6 +562,13 @@
 						ctx.fillStyle = "rgba(255, 255, 255, .5)";
 						ctx.fillRect(85 + i*159, 565, 50, 50);
 						ctx.restore();
+
+						if(drawCall.type == 'bomber'){
+							ctx.beginPath();
+							ctx.arc(drawCall.pos.x, drawCall.pos.y, drawCall.hitbox + (drawCall.grazeRadius * ( drawCall.energy/5)), 0, Math.PI * 2, false);
+							ctx.stroke();
+							ctx.closePath();
+						}
 					}
 					ctx.strokeRect(85 + i*159, 565, 50, 50);
 					fillText(ctx, "K", 50 + i * 159 , 628, "12pt courier", "#ddd");
@@ -558,9 +601,6 @@
 
 				// draw hud				
 				ctx.fillStyle = 'white';
-				document.querySelector('#createRoom').style.visibility = 'hidden';
-				document.querySelector('#joinRoom').style.visibility = 'hidden';
-				document.querySelector('#instructions').style.visibility = 'hidden';
 				ctx.textAlign = "left";
 				ctx.textBaseline = "middle";
 				fillText(ctx, "Room: " + room, 10, 20, "10pt courier", "#ddd");
@@ -596,6 +636,201 @@
 					else if( user.type == 'aura'){
 						fillText(ctx, "Burning Aura - 15 Energy/per sec", 15, 495, "10pt courier", "#ddd");
 					}
+				}
+			}
+			// GAME LOBBY
+			else{
+				ctx.textAlign = "left";
+				ctx.textBaseline = "middle";
+
+				ctx.lineWidth = 2;
+				ctx.strokeRect(162,2, 476, 456);
+				fillText(ctx, "Room: " + room, 175 , 20, "12pt courier", "#ddd");
+				fillText(ctx, "Select - J", 530 , 20, "12pt courier", "#ddd");
+				fillText(ctx, "Cancel - K", 530 , 40, "12pt courier", "#ddd");
+
+
+				ctx.strokeStyle = 'white';
+				ctx.fillStyle = 'rgba(255,255,255,.5)';
+
+				fillText(ctx, "Stats", 200 , 90, "18pt courier", "#ddd");
+				fillText(ctx, "Health:", 200 , 125, "12pt courier", "#ddd");
+				fillText(ctx, "Energy:", 200 , 150, "12pt courier", "#ddd");
+				fillText(ctx, "Attack:", 200 , 175, "12pt courier", "#ddd");
+				fillText(ctx, "Hitbox:", 200 , 200, "12pt courier", "#ddd");
+				fillText(ctx, "Graze:", 200 , 225, "12pt courier", "#ddd");
+				fillText(ctx, "Speed:", 200 , 250, "12pt courier", "#ddd");
+
+				fillText(ctx, "Skills/", 400 , 90, "18pt courier", "#ddd");
+				fillText(ctx, "Energy cost", 500 , 90, "12pt courier", "#ddd");
+
+				fillText(ctx, "Skill Info", 325 , 310, "18pt courier", "#ddd");
+
+
+				// Left Side bar
+				ctx.strokeRect(2,2, 158, 456);
+				ctx.strokeRect(15,125, 125, 50);
+				ctx.strokeRect(15,200, 125, 50);
+				ctx.strokeRect(15,275, 125, 50);
+				ctx.strokeRect(15,350, 125, 50);
+				ctx.textAlign = "center";
+
+				if(playerType == 0){
+					ctx.fillRect(15,125, 125, 50);
+					fillText(ctx, "Fighter", 400 , 50, "18pt courier", "#ddd");
+					ctx.textAlign = "left";
+
+					fillText(ctx, "Average", 275 , 125, "12pt courier", "#ddd");
+					fillText(ctx, "Low", 275 , 150, "12pt courier", "#ddd");
+					fillText(ctx, "High", 275 , 175, "12pt courier", "#ddd");
+					fillText(ctx, "Medium", 275 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "Small", 275 , 225, "12pt courier", "#ddd");
+					fillText(ctx, "Average", 275 , 250, "12pt courier", "#ddd");
+
+					fillText(ctx, "Finisher", 400 , 125, "12pt courier", "#ddd");
+					fillText(ctx, "High Damage", 425 , 145, "12pt courier", "#ddd");
+					fillText(ctx, "5 Energy", 425 , 165, "12pt courier", "#ddd");
+
+					fillText(ctx, "Judgement", 400 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "Very High Damage", 425 , 220, "12pt courier", "#ddd");
+					fillText(ctx, "+10 Energy", 425 , 240, "12pt courier", "#ddd");
+
+					fillText(ctx, "Finisher", 200 , 325, "14pt courier", "#ddd");
+					fillText(ctx, "Does max damage and heals 10% hp if it", 210 , 345, "12pt courier", "#ddd");
+					fillText(ctx, "kills the enemy.", 210 , 365, "12pt courier", "#ddd");
+					fillText(ctx, "Judgement", 200 , 390, "14pt courier", "#ddd");
+					fillText(ctx, "Damage scales with Energy. Slighlty", 210 , 410, "12pt courier", "#ddd");
+					fillText(ctx, "over 200% max damage at 10 energy.", 210 , 430, "12pt courier", "#ddd");
+
+				}
+				else if(playerType == 1){
+					ctx.fillRect(15,200, 125, 50);
+					fillText(ctx, "Bomber", 400 , 50, "18pt courier", "#ddd");
+					ctx.textAlign = "left";
+
+					fillText(ctx, "High", 275 , 125, "12pt courier", "#ddd");
+					fillText(ctx, "Average", 275 , 150, "12pt courier", "#ddd");
+					fillText(ctx, "Average", 275 , 175, "12pt courier", "#ddd");
+					fillText(ctx, "Large", 275 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "Large", 275 , 225, "12pt courier", "#ddd");
+					fillText(ctx, "Slow", 275 , 250, "12pt courier", "#ddd");
+
+					fillText(ctx, "Focused Bomb", 400 , 125, "12pt courier", "#ddd");
+					fillText(ctx, "Destroys enemy bullets", 425 , 145, "10pt courier", "#ddd");
+					fillText(ctx, "Average Damage", 425 , 165, "12pt courier", "#ddd");
+					fillText(ctx, "10 Energy", 425 , 185, "12pt courier", "#ddd");
+
+					fillText(ctx, "Energy Disperse", 400 , 220, "12pt courier", "#ddd");
+					fillText(ctx, "Destroys enemy bullets", 425 , 240, "10pt courier", "#ddd");
+					fillText(ctx, "Low Damage", 425 , 260, "12pt courier", "#ddd");
+					fillText(ctx, "+15 Energy", 425 , 280, "12pt courier", "#ddd");
+
+					fillText(ctx, "Focused Bomb", 200 , 325, "14pt courier", "#ddd");
+					fillText(ctx, "Does max damage and destroys bullets", 210 , 345, "12pt courier", "#ddd");
+					fillText(ctx, "in player's graze radius.", 210 , 365, "12pt courier", "#ddd");
+					fillText(ctx, "Energy Disperse", 200 , 390, "14pt courier", "#ddd");
+					fillText(ctx, "Does min damage and destroys bullets.", 210 , 410, "12pt courier", "#ddd");
+					fillText(ctx, "Range is shown when useable.", 210 , 430, "12pt courier", "#ddd");
+				}
+				else if(playerType == 2){
+					ctx.fillRect(15,275, 125, 50);
+					fillText(ctx, "Supplier", 400 , 50, "18pt courier", "#ddd");
+					ctx.textAlign = "left";
+
+					fillText(ctx, "Low", 275 , 125, "12pt courier", "#ddd");
+					fillText(ctx, "Low", 275 , 150, "12pt courier", "#ddd");
+					fillText(ctx, "Low", 275 , 175, "12pt courier", "#ddd");
+					fillText(ctx, "Small", 275 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "Large", 275 , 225, "12pt courier", "#ddd");
+					fillText(ctx, "Fast", 275 , 250, "12pt courier", "#ddd");
+
+					fillText(ctx, "Exp Gain", 400 , 125, "12pt courier", "#ddd");
+					fillText(ctx, "Convert energy into exp", 425 , 145, "10pt courier", "#ddd");
+					fillText(ctx, "15 Energy/per sec", 425 , 165, "12pt courier", "#ddd");
+
+					fillText(ctx, "Energy Regen", 400 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "Regen Allie's Energy", 425 , 220, "12pt courier", "#ddd");
+					fillText(ctx, "15 Energy/per sec", 425 , 240, "12pt courier", "#ddd");
+
+					fillText(ctx, "Exp Gain", 200 , 325, "14pt courier", "#ddd");
+					fillText(ctx, "Slowly drains your energy and converts", 210 , 345, "12pt courier", "#ddd");
+					fillText(ctx, "it into exp for all party members.", 210 , 365, "12pt courier", "#ddd");
+					fillText(ctx, "Energy Regen", 200 , 390, "14pt courier", "#ddd");
+					fillText(ctx, "Slowly drains your energy to", 210 , 410, "12pt courier", "#ddd");
+					fillText(ctx, "regen other party member's energy.", 210 , 430, "12pt courier", "#ddd");
+				}
+				else{
+					ctx.fillRect(15,350, 125, 50);
+					fillText(ctx, "Aura", 400 , 50, "18pt courier", "#ddd");
+					ctx.textAlign = "left";
+
+					fillText(ctx, "Low", 275 , 125, "12pt courier", "#ddd");
+					fillText(ctx, "High", 275 , 150, "12pt courier", "#ddd");
+					fillText(ctx, "Average", 275 , 175, "12pt courier", "#ddd");
+					fillText(ctx, "Small", 275 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "Medium", 275 , 225, "12pt courier", "#ddd");
+					fillText(ctx, "Slow", 275 , 250, "12pt courier", "#ddd");
+
+					fillText(ctx, "Healing Aura", 400 , 125, "12pt courier", "#ddd");
+					fillText(ctx, "Heal's Party", 425 , 145, "12pt courier", "#ddd");
+					fillText(ctx, "15 Energy/per sec", 425 , 165, "12pt courier", "#ddd");
+
+					fillText(ctx, "Burning Aura", 400 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "Average Damage", 425 , 220, "12pt courier", "#ddd");
+					fillText(ctx, "15 Energy/per sec", 425 , 240, "12pt courier", "#ddd");
+
+					fillText(ctx, "Healing Aura", 200 , 325, "14pt courier", "#ddd");
+					fillText(ctx, "Slowly drains your energy to heal all", 210 , 345, "12pt courier", "#ddd");
+					fillText(ctx, "party members.", 210 , 365, "12pt courier", "#ddd");
+					fillText(ctx, "Burning Aura", 200 , 390, "14pt courier", "#ddd");
+					fillText(ctx, "Slowly drains your energy to", 210 , 410, "12pt courier", "#ddd");
+					fillText(ctx, "deal damage to the enemy.", 210 , 430, "12pt courier", "#ddd");
+
+				}
+				ctx.textAlign = "center";
+
+				fillText(ctx, "Classes", 75 , 50, "15pt courier", "#ddd");
+				fillText(ctx, "Fighter", 75 , 150, "15pt courier", "#ddd");
+				fillText(ctx, "Bomber", 75 , 225, "15pt courier", "#ddd");
+				fillText(ctx, "Supplier", 75 , 300, "15pt courier", "#ddd");
+				fillText(ctx, "Aura", 75 , 375, "15pt courier", "#ddd");
+
+				//bottom box
+				ctx.strokeRect(2,510, 636, 128);
+				ctx.strokeRect(2,460, 636, 50);
+
+				var keys = Object.keys(players);
+				for(var i = 0; i < keys.length; i++){
+					var drawCall = players[ keys[i] ];
+
+					// Players Stat/Skill HUD
+					if(drawCall.ready === true){
+						ctx.fillStyle = "rgb(0,255,0)";
+						ctx.fillRect(2+ i * 159,460, 159, 48);
+					}
+					ctx.fillStyle = "rgba(0,0,0,.5)";
+					ctx.strokeStyle = "white";
+					ctx.textAlign = "center";
+					ctx.textBaseline = "middle";
+					ctx.fillRect(2+ i * 159,460, 159, 178);
+					ctx.strokeRect(2+ i * 159,460, 159, 178);
+					console.log(drawCall.ready);
+					// class Name
+					if( drawCall.type == 0) fillText(ctx, "Fighter", 79 + i * 159 , 490, "15pt courier", "#ddd");
+					else if( drawCall.type == 1) fillText(ctx, "Bomber", 79 + i * 159 , 490, "15pt courier", "#ddd");
+					else if( drawCall.type == 2) fillText(ctx, "Supplier", 79 + i * 159 , 490, "15pt courier", "#ddd");
+					else if( drawCall.type == 3) fillText(ctx, "Aura", 79 + i * 159 , 490, "15pt courier", "#ddd");
+					else fillText(ctx, "Fighter", 79 + i * 159 , 490, "15pt courier", "#ddd");
+
+					if( i == 0) fillText(ctx, drawCall.name, 79 + i * 159 , 525, "15pt courier", "rgb(255,0,0)");
+					else if( i == 1) fillText(ctx, drawCall.name, 79 + i * 159 , 525, "15pt courier", "rgb(0,255,0)");
+					else if( i == 2) fillText(ctx, drawCall.name, 79 + i * 159 , 525, "15pt courier", "rgb(0,255,255)");
+					else if( i == 3) fillText(ctx, drawCall.name, 79 + i * 159 , 525, "15pt courier", "rgb(255,165,0)");
+
+					ctx.strokeRect(25 + i*159, 565, 50, 50);
+					ctx.strokeRect(85 + i*159, 565, 50, 50);
+					fillText(ctx, "K", 50 + i * 159 , 628, "12pt courier", "#ddd");
+					fillText(ctx, "L", 110 + i * 159 , 628, "12pt courier", "#ddd");
 				}
 			}
 		}

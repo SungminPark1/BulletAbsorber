@@ -29,13 +29,14 @@
 // Active Skill - Finisher (deals max damage - restore hp if it kills enemy), Final Strike (more energy = higher multiplier to max damage)
 // To DO
 // implement skill 1 and 2
-var createFighter = function(name, color) {
+var createFighter = function(name, x, y, color) {
 	var fighter = {
+		ready: false,
 		type: 'fighter',
 		name: name,
 		pos: {
-			x: 200,
-			y: 200,
+			x: x,
+			y: y,
 		},
 		color: color,
 		alive: true,
@@ -98,7 +99,7 @@ var createFighter = function(name, color) {
 			if(this.energy < this.skill2Cost){
 			}
 			else{
-				enemy.hp -= (this.maxDamage + (this.energy)) * (this.energy/5);
+				enemy.hp -= (this.maxDamage + (this.energy)) * (this.energy/6);
 
 				this.energy = 0;
 			}
@@ -137,13 +138,14 @@ var createFighter = function(name, color) {
 };
 
 // Active Skill - Focused Bomb (clear bullets in graze radius + deal damage), Barrier (more energy = larger bullet clearing radius)
-var createBomber = function(name, color) {
+var createBomber = function(name, x, y, color) {
 	var bomber = {
+		ready: false,
 		type: 'bomber',
  		name: name,
 		pos: {
-			x: 200,
-			y: 200,
+			x: x,
+			y: y,
 		},
 		color: color,
 		alive: true,
@@ -224,6 +226,8 @@ var createBomber = function(name, color) {
 					return bullet.active;
 				});
 
+				enemy.hp -= this.minDamage;
+
 				this.energy = 0;
 				this.skill2Used = false;
 			}
@@ -262,13 +266,14 @@ var createBomber = function(name, color) {
 
 // support class
 // Sustained skills - ExpGain (convert energy to exp), EnergyRegen (give energy to allies)
-var createSupplier = function(name, color) {
+var createSupplier = function(name, x, y, color) {
 	var supplier = {
+		ready: false,
 		type: 'supplier',
  		name: name,
 		pos: {
-			x: 200,
-			y: 200,
+			x: x,
+			y: y,
 		},
 		color: color,
 		alive: true,
@@ -389,13 +394,14 @@ var createSupplier = function(name, color) {
 
 // support class
 // Sustained skills - HpRegen (convert energy to hp), DamageField (convert energy to damage)
-var createAura = function(name, color) {
+var createAura = function(name, x, y ,color) {
 	var aura = {
+		ready: false,
 		type: 'aura',
  		name: name,
 		pos: {
-			x: 200,
-			y: 200,
+			x: x,
+			y: y,
 		},
 		color: color,
 		alive: true,

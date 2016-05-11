@@ -36,20 +36,24 @@ var onMsg = function(socket, io) {
 
 	socket.on('joinRoom', function(data, io){
 		if(gameRooms[data.room]){
-			socket.leave('lobby');
-			socket.join(data.room);
-			socket.room = data.room;
+			if(Object.keys(gameRooms[data.room].players).length < 4 && gameRooms[data.room].started === false){
+				socket.leave('lobby');
+				socket.join(data.room);
+				socket.room = data.room;
 
-			gameRooms[data.room].addPlayer(data.player);
+				gameRooms[data.room].addPlayer(data.player);
 
-
-			socket.emit('updateData', {
-				room: data.room,
-				players: gameRooms[socket.room].players,
-				enemy: gameRooms[socket.room].enemy,
-				arrayBullets: gameRooms[socket.room].arrayBullets,
-				started: gameRooms[socket.room].started
-			});
+				socket.emit('updateData', {
+					room: data.room,
+					players: gameRooms[socket.room].players,
+					enemy: gameRooms[socket.room].enemy,
+					arrayBullets: gameRooms[socket.room].arrayBullets,
+					started: gameRooms[socket.room].started
+				});
+			}
+			else{
+				console.log(data.roomName + "Is Full or already started")
+			}
 		}
 		else{
 			// send error message
@@ -65,29 +69,53 @@ var onMsg = function(socket, io) {
 		gameRooms[socket.room].updatePlayers(data);
 	});
 
-	socket.on('attack', function(data){
-		// make it into a game function so it can also detect if an enemy dies and can recreate the enemy?
-		gameRooms[socket.room].enemy.hp -= data.damage;
-		gameRooms[socket.room].players[socket.name].currentAttackRate = gameRooms[socket.room].players[socket.name].attackRate;
+	socket.on('updateGameLobby', function(data){
+		gameRooms[socket.room].players[socket.name].type = data.type;
+		gameRooms[socket.room].players[socket.name].ready = data.ready;
 
+		var numReady = 0;
+		var starting = false;
+		var keys = Object.keys(gameRooms[socket.room].players);
+		for(var i = 0; i< keys.length; i++){
+			if(gameRooms[socket.room].players[keys[i]].ready === true){
+				numReady++;
+			}
+		}
+
+		if(numReady == keys.length){
+			gameRooms[socket.room].startGame();
+			starting = true;
+
+			io.sockets.in(socket.room).emit('starting', {
+				start: starting,
+				players: gameRooms[socket.room].players
+			});
+		}
 	});
 
 	updateRoom = function(room){
 		gameRooms[room].update();
 
-		io.sockets.in(room).emit('update', {
-			players: gameRooms[room].players,
-			arrayBullets: gameRooms[room].arrayBullets,
-			dt: gameRooms[room].dt,
-			enemyHp: gameRooms[room].enemy.hp,
-			enemyMaxHp: gameRooms[room].enemy.maxHp,
-			enemyDamage: gameRooms[room].enemy.damage,
-			enemyName: gameRooms[room].enemy.name,
-			enemyCurrentAttackDur:gameRooms[room].enemy.currentAttackDur,
-			enemyAttackDur:gameRooms[room].enemy.attackDur,
-			enemyCurrentRestDur:gameRooms[room].enemy.currentRestDur,
-			enemyRestDur:gameRooms[room].enemy.restDur
-		});
+		if(gameRooms[room].started === true){
+			io.sockets.in(room).emit('updateGame', {
+				players: gameRooms[room].players,
+				arrayBullets: gameRooms[room].arrayBullets,
+				dt: gameRooms[room].dt,
+				enemyHp: gameRooms[room].enemy.hp,
+				enemyMaxHp: gameRooms[room].enemy.maxHp,
+				enemyDamage: gameRooms[room].enemy.damage,
+				enemyName: gameRooms[room].enemy.name,
+				enemyCurrentAttackDur:gameRooms[room].enemy.currentAttackDur,
+				enemyAttackDur:gameRooms[room].enemy.attackDur,
+				enemyCurrentRestDur:gameRooms[room].enemy.currentRestDur,
+				enemyRestDur:gameRooms[room].enemy.restDur
+			});
+		}
+		else{
+			io.sockets.in(room).emit('updateGameLobby', {
+				players: gameRooms[room].players,
+			});
+		}
 	}
 };
 
