@@ -52,9 +52,7 @@
 			user.name = "Guest " + Math.floor(Math.random()*1000);
 		}
 		else{
-			document.querySelector('#highScore').innerHTML = highScore;
-			document.querySelector('#currentScore').innerHTML = currentScore;
-			document.querySelector('#score').value = highScore;
+			// event for submitting score
 		}
 
 		document.querySelector('#createRoom').onclick = function(e){

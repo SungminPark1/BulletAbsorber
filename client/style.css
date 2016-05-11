@@ -1,3 +1,37 @@
+body{
+	background-color: #141F28;
+}
+
+#wrapper{
+	background-color: #576775;
+	width: 96%;
+	max-width: 1080px;
+	margin: auto;
+	padding: 2%;
+	padding-bottom: 1%;
+}
+
+h1{
+	font-size: 25px;
+	margin-top: 2%;
+	margin-bottom: 2%;
+	color: #5AD8E0;
+}
+
+h2{
+	font-size: 20px;
+	margin-top: 3%;
+	margin-bottom: 2%;
+	color: #5AD8E0;
+}
+
+p, div{
+	font-size: 17px;
+	margin-top: 2%;
+	margin-bottom: 2%;
+	color: #5AD8E0;
+}
+
 a{
 	margin-right: 1%;
 	margin-left: 1%;

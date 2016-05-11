@@ -2,18 +2,19 @@ extends ./index.jade
 block append style
   link(rel="stylesheet", type="text/css", href="/assets/style.css")
 block body
-  h1 Account page
-  a(href="/") Game
-  a(href="/highscore") Score Board
-  a(href="/logout") Logout
+  div#wrapper
+    h1 Account page
+    a(href="/") Game
+    a(href="/highscore") Score Board
+    a(href="/logout") Logout
 
-  section#record
-    if !record || record.length == 0
-      div.record
-        h3 No Records Yet
-    else
-      each val in record
+    section#record
+      if !record || record.length == 0
         div.record
-          p.date Date: #{val.createdDate}
-          p.user User: #{val.user}
-          p.score Score: #{val.score}
+          h3 No Records Yet
+      else
+        each val in record
+          div.record
+            p.date Date: #{val.createdDate}
+            p.user User: #{val.user}
+            p.score Score: #{val.score}
