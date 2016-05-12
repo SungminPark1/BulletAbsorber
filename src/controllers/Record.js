@@ -44,7 +44,12 @@ var highScorePage = function(req, res){
         });
 
         //return success
-        return res.render('highscore', {csrfToken: req.csrfToken(), user: req.session.account.username, records: docs}); 
+        if(req.session.account){	
+        	return res.render('highscore', {csrfToken: req.csrfToken(), user: req.session.account.username, records: docs}); 
+        }
+        else{
+        	return res.render('highscore', {csrfToken: req.csrfToken(), records: docs});
+        }
     };
 
     findAllRecords(req, res, callback);
