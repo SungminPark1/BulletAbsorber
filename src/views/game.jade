@@ -3,20 +3,25 @@ block append style
   link(rel="stylesheet", type="text/css", href="/assets/style.css")
 block body
   div#wrapper
-    a(href="/highscore") Score Board
     if !user
-      a(href="/signup") Sign up
-      section#login
-        form#loginForm(class="mainForm", name="loginForm", action="/login", method="POST")
-          label(for="username") Username: 
-          input#user(type="text", name="username", placeholder="username")
-          label(for="pass") Password: 
-          input#pass(type="password", name="pass", placeholder="password")
-          input(type="hidden", name="_csrf", value="#{csrfToken}")
-          a#loginSubmit(class="formSubmit", href="#") Sign in
+      div(class="navi")
+        section#login
+          form#loginForm(class="mainForm", name="loginForm", action="/login", method="POST")
+            label(for="username")
+            input#user(type="text", name="username", placeholder="username")
+            label(for="pass")
+            input#pass(type="password", name="pass", placeholder="password")
+            input(type="hidden", name="_csrf", value="#{csrfToken}")
+            a#loginSubmit(class="formSubmit", href="#") Sign in
+        a(class="navi" href="/") Game
+        a(class="navi" href="/highscore") Score Board
+        a(class="navi" href="/signup") Sign up
     else
-      a(href="/record") Your Records
-      a(href="/logout") Logout
+      div(class="navi")
+        a(class="navi" href="/") Game
+        a(class="navi" href="/highscore") Score Board
+        a(class="navi" href="/record") Your Records
+        a(class="navi" href="/logout") Logout
       h3#user Welcome, #{user}
     .canvasDiv
       canvas(width="640px" height="640px")

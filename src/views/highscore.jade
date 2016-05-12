@@ -4,8 +4,9 @@ block append style
 block body
   div#wrapper
     h1 Highscores Page
-    a(href="/") Game
-    a(href="/logout") Logout
+    a(class="navi" href="/") Game
+    a(class="navi" href="/highscore") Score Board
+    a(class="navi" href="/logout") Logout
   
     section#record
       if !records || records.length == 0
