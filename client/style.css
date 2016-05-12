@@ -119,6 +119,7 @@ a.navi:active{
 	display: inline;
 }
 
+/* Canvas Related */
 .canvasDiv{
 	position: relative;
 	width: 640px;
@@ -175,6 +176,20 @@ canvas{
 	background-color: #ddd;
 }
 
+/* Game Page Score Box */
+#score , #noScore{
+	width: 75%;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	margin-top: 1%;
+	background-color: #141F28;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+/* Player Record / Score Board Record */
 
 .record{
 	width: 75%;

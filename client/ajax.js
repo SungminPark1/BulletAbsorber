@@ -16,14 +16,13 @@ $(document).ready(function() {
             error: function(xhr, status, error) {
                 var messageObj = JSON.parse(xhr.responseText);
             	console.log(messageObj.error);
-                //handleError(messageObj.error);
             }
         });        
     }
 
     $("#loginSubmit").on("click", function(e) {
         e.preventDefault();
-    
+
         if($("#user").val() == '' || $("#pass").val() == '') {
         	console.log("Username or password is empty");
             //handleError("RAWR! Username or password is empty");
@@ -47,14 +46,14 @@ $(document).ready(function() {
 
     $("#signupSubmit").on("click", function(e) {
         e.preventDefault();
-    
-        if($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
+
+        if($("#username").val() == '' || $("#password").val() == '' || $("#password2").val() == '') {
         	console.log("All fields are required");
             //handleError("RAWR! All fields are required");
             return false;
         }
         
-        if($("#pass").val() !== $("#pass2").val()) {
+        if($("#password").val() !== $("#password2").val()) {
         	console.log("Passwords do not match");
             //handleError("RAWR! Passwords do not match");
             return false;           

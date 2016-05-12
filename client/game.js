@@ -6,7 +6,9 @@
 	var ctx;
 
 	var user = {};
-	var highScore, currentScore;
+
+	var hasAccount = false;
+	var sessionRecord = {};
 
 	var room, started, isLobby;
 	var players = {};
@@ -50,9 +52,20 @@
 		user.name = document.querySelector('#user').innerHTML.substring(9);
 		if(user.name == ''){
 			user.name = "Guest " + Math.floor(Math.random()*1000);
+
+			var divString = '<h2>Current Session Score</h2>';
+			divString += '<p>Login to be able to submit score</p>';
+
+			document.querySelector('#score').innerHTML = divString;
 		}
 		else{
-			// event for submitting score
+			hasAccount = true;
+
+			var divString = '<h2>Current Session Score</h2>';
+			divString += '<p>No record yet</p>';
+			divString += '<p>Record will show after a game session ends</p>';
+
+			document.querySelector('#score').innerHTML = divString;
 		}
 
 		document.querySelector('#createRoom').onclick = function(e){
@@ -188,6 +201,19 @@
 				if(keys[i] == user.name)user = players[keys[i]];
 			}
 			draw();
+		});
+
+		socket.on('gameEnded', function(data){
+			sessionRecord = data;
+
+			// if not a guest change div score to show score to see if they want to submit it
+			if(hasAccount === true){
+				// record party size, player lvl, class, min~max damage, death num, max hp, max energy, enemy killed,
+
+				var divString = '<h2>Current Session Score</h2>';
+				divString += '<div id="recordData">';
+				divString += '<p></p>';
+			}
 		});
 	}
 
