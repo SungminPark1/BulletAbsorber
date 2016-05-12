@@ -4,9 +4,13 @@ block append style
 block body
   div#wrapper
     h1 Account page
-    a(class="navi" href="/") Game
-    a(class="navi" href="/highscore") Score Board
-    a(class="navi" href="/logout") Logout
+    div(class="navi")
+        div(class='right')
+          p#user Welcome, #{user}
+          a(class="navi" href="/record") Your Records
+          a(class="navi" href="/logout") Logout
+        a(class="navi" href="/") Game
+        a(class="navi" href="/highscore") Score Board
 
     section#record
       if !record || record.length == 0

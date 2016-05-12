@@ -18,11 +18,12 @@ block body
         a(class="navi" href="/signup") Sign up
     else
       div(class="navi")
+        div(class='right')
+          p#user Welcome, #{user}
+          a(class="navi" href="/record") Your Records
+          a(class="navi" href="/logout") Logout
         a(class="navi" href="/") Game
         a(class="navi" href="/highscore") Score Board
-        a(class="navi" href="/record") Your Records
-        a(class="navi" href="/logout") Logout
-      h3#user Welcome, #{user}
     .canvasDiv
       canvas(width="640px" height="640px")
       button#createRoom Create Room

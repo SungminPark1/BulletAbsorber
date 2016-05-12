@@ -64,8 +64,8 @@ p, div{
 a{
 	color: #8CEFB1;
 	background-color: #1E2932;
-	margin-right: auto;
-	margin-left: auto;
+	margin-right: 1%;
+	margin-left: 1%;
 	padding: 1%;
 	text-decoration: none;
 	font-weight: bold;
@@ -105,9 +105,19 @@ a.navi:active{
 
 #login{
 	float: right;
-	width: 350;
+	width: auto;
+	width: 350px;
 }
 
+.right{
+	margin: 0;
+	float: right;
+	width: 300px;
+}
+
+#user{
+	display: inline;
+}
 
 .canvasDiv{
 	position: relative;
@@ -173,7 +183,7 @@ canvas{
 	padding-top: 1px;
 	padding-bottom: 1px;
 	margin-top: 1%;
-	background-color: lightgray;
+	background-color: #141F28;
 	margin-right: auto;
 	margin-left: auto;
 }

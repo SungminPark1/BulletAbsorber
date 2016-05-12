@@ -4,10 +4,27 @@ block append style
 block body
   div#wrapper
     h1 Highscores Page
-    a(class="navi" href="/") Game
-    a(class="navi" href="/highscore") Score Board
-    a(class="navi" href="/logout") Logout
-  
+    if !user
+      div(class="navi")
+        section#login
+          form#loginForm(class="mainForm", name="loginForm", action="/login", method="POST")
+            label(for="username")
+            input#user(type="text", name="username", placeholder="username")
+            label(for="pass")
+            input#pass(type="password", name="pass", placeholder="password")
+            input(type="hidden", name="_csrf", value="#{csrfToken}")
+            a#loginSubmit(class="formSubmit", href="#") Sign in
+        a(class="navi" href="/") Game
+        a(class="navi" href="/highscore") Score Board
+        a(class="navi" href="/signup") Sign up
+    else
+      div(class="navi")
+        div(class='right')
+          p#user Welcome, #{user}
+          a(class="navi" href="/record") Your Records
+          a(class="navi" href="/logout") Logout
+        a(class="navi" href="/") Game
+        a(class="navi" href="/highscore") Score Board
     section#record
       if !records || records.length == 0
         div.record

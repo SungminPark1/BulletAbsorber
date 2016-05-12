@@ -10,7 +10,7 @@ var recordPage = function(req, res){
 			return res.status(400).json({error: "An error occurred"});
 		}
 
-		res.render('record', {csrfToken: req.csrfToken(), record: docs});
+		res.render('record', {record: docs});
 	});
 };
 
@@ -44,7 +44,7 @@ var highScorePage = function(req, res){
         });
 
         //return success
-        return res.render('highscore', {records: docs}); 
+        return res.render('highscore', {csrfToken: req.csrfToken(), user: req.session.account.username, records: docs}); 
     };
 
     findAllRecords(req, res, callback);
