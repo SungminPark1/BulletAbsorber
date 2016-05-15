@@ -89,6 +89,10 @@ input{
 	padding: 1%;
 }
 
+img{
+	margin: 2%;
+	width: 96%;
+}
 /* Navi bar */
 
 div.navi{
@@ -136,7 +140,7 @@ canvas{
 	padding: 0%;
 }
 
-#createRoom, #joinRoom, #instructions{
+#createRoom, #joinRoom{
 	margin: 0px auto;
 	border: 2px solid #ddd;
 	background-color: black;
@@ -167,22 +171,16 @@ canvas{
 	top: 50%;
 }
 
-/* Not really yet :/ */
-#instructions{
-	display: none;
-	top: 60%;
-}
-
-#createRoom:hover, #joinRoom:hover, #instructions:hover{
+#createRoom:hover, #joinRoom:hover{
 	border-color: red;
 }
 
-#createRoom:active, #joinRoom:active, #instructions:active{
+#createRoom:active, #joinRoom:active{
 	background-color: #ddd;
 }
 
 /* Player Record / Score Board Record */
-#score , #noScore{
+#score , #noScore, #instructions{
 	width: 75%;
 	min-width: 635px;
 	padding-left: 8px;

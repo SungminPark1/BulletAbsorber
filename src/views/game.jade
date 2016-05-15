@@ -29,10 +29,22 @@ block body
       canvas(width="640px" height="640px")
       button#createRoom Create Room
       button#joinRoom Join Room
-      button#instructions Instructions
       div#gameInfoBox
     h2 Current Session Score
     div#score
+    h2 Instructions
+    div#instructions
+      ul
+        li Gain energy and exp by grazing bullets.
+        li You can graze bullets by letting it enter your graze radius
+        li Bullets that are grazed with become gray (
+          b They can still damage you!)
+        li You can only attack when your attack bar is full
+        li To attack enter your attack circle and press J
+        li The closer you are to the center of the circle the higher your damage is
+        li Your skill icon will light up (like below) when its useable
+        
+      img(src="/assets/img/instruction.png")
 
 block scripts
   script(src="/socket.io/socket.io.js")

@@ -72,7 +72,7 @@
 		}
 
 		document.querySelector('#createRoom').onclick = function(e){
-			//current code for test
+
 			document.querySelector('#gameInfoBox').style.zIndex = 1;
 
 			var divString = '<h1>Enter Room Name</h1>';
@@ -200,6 +200,8 @@
 			for(var i = 0; i < keys.length; i++){
 				if(keys[i] == user.name)user = players[keys[i]];
 			}
+			document.querySelector('#createRoom').style.visibility = 'hidden';
+			document.querySelector('#joinRoom').style.visibility = 'hidden';
 			draw();
 		});
 
@@ -312,27 +314,32 @@
 
 					var player = players[keys[i]];
 
+					var speed = player.speed;
 					updated = false;
 					damage = 0;
 
+					//movement restriction on active skills
+					if(player.skill1Used === true) speed *= .5;
+					if(player.skill2Used === true) speed *= .5;
+
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_W] === true){
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_SHIFT] === true) user.pos.y += (-player.speed/2) * dt;
-						else user.pos.y += -player.speed * dt;
+						else user.pos.y += -speed * dt;
 						updated = true;
 					}
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_A] === true){
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_SHIFT] === true) user.pos.x += (-player.speed/2) * dt;
-						else user.pos.x += -player.speed * dt;
+						else user.pos.x += -speed * dt;
 						updated = true;
 					}
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_S] === true){
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_SHIFT] === true) user.pos.y += (player.speed/2) * dt;
-						else user.pos.y += player.speed * dt;
+						else user.pos.y += speed * dt;
 						updated = true;
 					}
 					if(myKeys.keydown[myKeys.KEYBOARD.KEY_D] === true){
 						if(myKeys.keydown[myKeys.KEYBOARD.KEY_SHIFT] === true) user.pos.x += (player.speed/2) * dt;
-						else user.pos.x += player.speed * dt;
+						else user.pos.x += speed * dt;
 						updated = true;
 					}
 
@@ -509,19 +516,18 @@
 			ctx.textBaseline = "middle";
 			fillText(ctx, "Title", 640/2, 640/2 - 200, "50pt courier", "#ddd");
 
-			fillText(ctx, "Control", 640/2, 640 - 130, "20pt courier", "#ddd");
-			fillText(ctx, "Create a new room or join an existing room", 640/2, 640 - 100, "15pt courier", "#ddd");
-			fillText(ctx, "Use cursor to click buttons", 640/2, 640 - 75, "15pt courier", "#ddd");
-			//fillText(ctx, "Use cursor to click buttons", 640/2, 640 - 50, "15pt courier", "#ddd");
-			//fillText(ctx, "Z or J to comfirm", 640/2, 640 - 75, "15pt courier", "#ddd");
-			//fillText(ctx, "Shift or L to slow movement speed", 640/2, 640 - 50, "15pt courier", "#ddd");
+			ctx.textAlign = "left";
 
+			fillText(ctx, "Control", 25, 640 - 160, "20pt courier", "#ddd");
+			fillText(ctx, "WASD - Move", 25, 640 - 125, "15pt courier", "#ddd");
+			fillText(ctx, "Shift - Reduce Speed", 25, 640 - 100, "15pt courier", "#ddd");
+			fillText(ctx, "J - Attack", 25, 640 - 75, "15pt courier", "#ddd");
+			fillText(ctx, "K/L - Skills", 25, 640 - 50, "15pt courier", "#ddd");
+
+			fillText(ctx, "Instructions are Below", 350, 640 - 50, "15pt courier", "#ddd");
 		}
-		else{
-			document.querySelector('#createRoom').style.visibility = 'hidden';
-			document.querySelector('#joinRoom').style.visibility = 'hidden';
-			document.querySelector('#instructions').style.visibility = 'hidden';
 
+		else{
 			if(started === true){
 				var keys = Object.keys(players);
 
@@ -727,23 +733,23 @@
 						fillText(ctx, "Focused Bomb - 10 Energy", 15, 455, "10pt courier", "#ddd");
 					}
 					else if( user.type == 'supplier'){
-						fillText(ctx, "Exp Generator - 15 Energy/per sec", 15, 455, "10pt courier", "#ddd");
+						fillText(ctx, "Exp Generator - 6 Energy/per sec", 15, 455, "10pt courier", "#ddd");
 					}
 					else if( user.type == 'aura'){
-						fillText(ctx, "Healing Aura - 15 Energy/per sec", 15, 455, "10pt courier", "#ddd");
+						fillText(ctx, "Healing Aura - 6 Energy/per sec", 15, 455, "10pt courier", "#ddd");
 					}
 					fillText(ctx, "Skill 2 - L", 10, 480, "12pt courier", "#ddd");
 					if(user.type == 'fighter'){
 						fillText(ctx, "Judgement - +10 Energy", 15, 495, "10pt courier", "#ddd");
 					}
 					else if (user.type == 'bomber'){
-						fillText(ctx, "Barrier - +15 Energy", 15, 495, "10pt courier", "#ddd");
+						fillText(ctx, "Energy Disperse - +15 Energy", 15, 495, "10pt courier", "#ddd");
 					}
 					else if( user.type == 'supplier'){
-						fillText(ctx, "Energy Regen - 15 Energy/per sec", 15, 495, "10pt courier", "#ddd");
+						fillText(ctx, "Energy Regen - 6 Energy/per sec", 15, 495, "10pt courier", "#ddd");
 					}
 					else if( user.type == 'aura'){
-						fillText(ctx, "Burning Aura - 15 Energy/per sec", 15, 495, "10pt courier", "#ddd");
+						fillText(ctx, "Burning Aura - 6 Energy/per sec", 15, 495, "10pt courier", "#ddd");
 					}
 				}
 			}
@@ -762,13 +768,14 @@
 				ctx.strokeStyle = 'white';
 				ctx.fillStyle = 'rgba(255,255,255,.5)';
 
-				fillText(ctx, "Stats", 200 , 90, "18pt courier", "#ddd");
+				fillText(ctx, "Stats Growth", 200 , 90, "18pt courier", "#ddd");
 				fillText(ctx, "Health:", 200 , 125, "12pt courier", "#ddd");
 				fillText(ctx, "Energy:", 200 , 150, "12pt courier", "#ddd");
 				fillText(ctx, "Attack:", 200 , 175, "12pt courier", "#ddd");
 				fillText(ctx, "Hitbox:", 200 , 200, "12pt courier", "#ddd");
 				fillText(ctx, "Graze:", 200 , 225, "12pt courier", "#ddd");
 				fillText(ctx, "Speed:", 200 , 250, "12pt courier", "#ddd");
+				fillText(ctx, "Size:", 200 , 275, "12pt courier", "#ddd");
 
 				fillText(ctx, "Skills/", 400 , 90, "18pt courier", "#ddd");
 				fillText(ctx, "Energy cost", 500 , 90, "12pt courier", "#ddd");
@@ -792,9 +799,10 @@
 					fillText(ctx, "Average", 275 , 125, "12pt courier", "#ddd");
 					fillText(ctx, "Low", 275 , 150, "12pt courier", "#ddd");
 					fillText(ctx, "High", 275 , 175, "12pt courier", "#ddd");
-					fillText(ctx, "Medium", 275 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "Average", 275 , 200, "12pt courier", "#ddd");
 					fillText(ctx, "Small", 275 , 225, "12pt courier", "#ddd");
 					fillText(ctx, "Average", 275 , 250, "12pt courier", "#ddd");
+					fillText(ctx, "Medium", 275 , 275, "12pt courier", "#ddd");
 
 					fillText(ctx, "Finisher", 400 , 125, "12pt courier", "#ddd");
 					fillText(ctx, "High Damage", 425 , 145, "12pt courier", "#ddd");
@@ -805,11 +813,11 @@
 					fillText(ctx, "+10 Energy", 425 , 240, "12pt courier", "#ddd");
 
 					fillText(ctx, "Finisher", 200 , 325, "14pt courier", "#ddd");
-					fillText(ctx, "Does max damage and heals 10% hp if it", 210 , 345, "12pt courier", "#ddd");
-					fillText(ctx, "kills the enemy.", 210 , 365, "12pt courier", "#ddd");
+					fillText(ctx, "Does max damage and heals 10% more hp", 210 , 345, "12pt courier", "#ddd");
+					fillText(ctx, "if it kills the enemy.", 210 , 365, "12pt courier", "#ddd");
 					fillText(ctx, "Judgement", 200 , 390, "14pt courier", "#ddd");
-					fillText(ctx, "Damage scales with Energy. Slighlty", 210 , 410, "12pt courier", "#ddd");
-					fillText(ctx, "over 200% max damage at 10 energy.", 210 , 430, "12pt courier", "#ddd");
+					fillText(ctx, "Uses all energy. Damage scales with energy.", 210 , 410, "12pt courier", "#ddd");
+					fillText(ctx, "If it kills enemy, player will not heal.", 210 , 430, "12pt courier", "#ff3333");
 
 				}
 				else if(playerType == 1){
@@ -820,9 +828,10 @@
 					fillText(ctx, "High", 275 , 125, "12pt courier", "#ddd");
 					fillText(ctx, "Average", 275 , 150, "12pt courier", "#ddd");
 					fillText(ctx, "Average", 275 , 175, "12pt courier", "#ddd");
-					fillText(ctx, "Large", 275 , 200, "12pt courier", "#ddd");
-					fillText(ctx, "Large", 275 , 225, "12pt courier", "#ddd");
-					fillText(ctx, "Slow", 275 , 250, "12pt courier", "#ddd");
+					fillText(ctx, "Average", 275 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "High", 275 , 225, "12pt courier", "#ddd");
+					fillText(ctx, "Low", 275 , 250, "12pt courier", "#ddd");
+					fillText(ctx, "Large", 275 , 275, "12pt courier", "#ddd");
 
 					fillText(ctx, "Focused Bomb", 400 , 125, "12pt courier", "#ddd");
 					fillText(ctx, "Destroys enemy bullets", 425 , 145, "10pt courier", "#ddd");
@@ -849,24 +858,26 @@
 					fillText(ctx, "Low", 275 , 125, "12pt courier", "#ddd");
 					fillText(ctx, "Low", 275 , 150, "12pt courier", "#ddd");
 					fillText(ctx, "Low", 275 , 175, "12pt courier", "#ddd");
-					fillText(ctx, "Small", 275 , 200, "12pt courier", "#ddd");
-					fillText(ctx, "Large", 275 , 225, "12pt courier", "#ddd");
-					fillText(ctx, "Fast", 275 , 250, "12pt courier", "#ddd");
+					fillText(ctx, "Average", 275 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "High", 275 , 225, "12pt courier", "#ddd");
+					fillText(ctx, "High", 275 , 250, "12pt courier", "#ddd");
+					fillText(ctx, "Small", 275 , 275, "12pt courier", "#ddd");
 
 					fillText(ctx, "Exp Gain", 400 , 125, "12pt courier", "#ddd");
 					fillText(ctx, "Convert energy into exp", 425 , 145, "10pt courier", "#ddd");
-					fillText(ctx, "15 Energy/per sec", 425 , 165, "12pt courier", "#ddd");
+					fillText(ctx, "6 Energy/per sec", 425 , 165, "12pt courier", "#ddd");
 
-					fillText(ctx, "Energy Regen", 400 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "Energy Drain", 400 , 200, "12pt courier", "#ddd");
 					fillText(ctx, "Regen Allie's Energy", 425 , 220, "12pt courier", "#ddd");
-					fillText(ctx, "15 Energy/per sec", 425 , 240, "12pt courier", "#ddd");
+					fillText(ctx, "Low Damage", 425 , 240, "12pt courier", "#ddd");
+					fillText(ctx, "6 Energy/per sec", 425 , 260, "12pt courier", "#ddd");
 
 					fillText(ctx, "Exp Gain", 200 , 325, "14pt courier", "#ddd");
 					fillText(ctx, "Slowly drains your energy and converts", 210 , 345, "12pt courier", "#ddd");
 					fillText(ctx, "it into exp for all party members.", 210 , 365, "12pt courier", "#ddd");
-					fillText(ctx, "Energy Regen", 200 , 390, "14pt courier", "#ddd");
-					fillText(ctx, "Slowly drains your energy to", 210 , 410, "12pt courier", "#ddd");
-					fillText(ctx, "regen other party member's energy.", 210 , 430, "12pt courier", "#ddd");
+					fillText(ctx, "Energy Drain", 200 , 390, "14pt courier", "#ddd");
+					fillText(ctx, "Slowly drains your energy to deal damage", 210 , 410, "12pt courier", "#ddd");
+					fillText(ctx, "and regen other party member's energy.", 210 , 430, "12pt courier", "#ddd");
 				}
 				else{
 					ctx.fillRect(15,350, 125, 50);
@@ -876,24 +887,25 @@
 					fillText(ctx, "Low", 275 , 125, "12pt courier", "#ddd");
 					fillText(ctx, "High", 275 , 150, "12pt courier", "#ddd");
 					fillText(ctx, "Average", 275 , 175, "12pt courier", "#ddd");
-					fillText(ctx, "Small", 275 , 200, "12pt courier", "#ddd");
-					fillText(ctx, "Medium", 275 , 225, "12pt courier", "#ddd");
-					fillText(ctx, "Slow", 275 , 250, "12pt courier", "#ddd");
+					fillText(ctx, "Average", 275 , 200, "12pt courier", "#ddd");
+					fillText(ctx, "Average", 275 , 225, "12pt courier", "#ddd");
+					fillText(ctx, "Low", 275 , 250, "12pt courier", "#ddd");
+					fillText(ctx, "Small", 275 , 275, "12pt courier", "#ddd");
 
 					fillText(ctx, "Healing Aura", 400 , 125, "12pt courier", "#ddd");
 					fillText(ctx, "Heal's Party", 425 , 145, "12pt courier", "#ddd");
-					fillText(ctx, "15 Energy/per sec", 425 , 165, "12pt courier", "#ddd");
+					fillText(ctx, "6 Energy/per sec", 425 , 165, "12pt courier", "#ddd");
 
 					fillText(ctx, "Burning Aura", 400 , 200, "12pt courier", "#ddd");
 					fillText(ctx, "Average Damage", 425 , 220, "12pt courier", "#ddd");
-					fillText(ctx, "15 Energy/per sec", 425 , 240, "12pt courier", "#ddd");
+					fillText(ctx, "6 Energy/per sec", 425 , 240, "12pt courier", "#ddd");
 
 					fillText(ctx, "Healing Aura", 200 , 325, "14pt courier", "#ddd");
 					fillText(ctx, "Slowly drains your energy to heal all", 210 , 345, "12pt courier", "#ddd");
 					fillText(ctx, "party members.", 210 , 365, "12pt courier", "#ddd");
 					fillText(ctx, "Burning Aura", 200 , 390, "14pt courier", "#ddd");
-					fillText(ctx, "Slowly drains your energy to", 210 , 410, "12pt courier", "#ddd");
-					fillText(ctx, "deal damage to the enemy.", 210 , 430, "12pt courier", "#ddd");
+					fillText(ctx, "Slowly drains your energy to deal damage", 210 , 410, "12pt courier", "#ddd");
+					fillText(ctx, "to the enemy.", 210 , 430, "12pt courier", "#ddd");
 
 				}
 				ctx.textAlign = "center";

@@ -25,7 +25,6 @@ function createGame(data){
 		},
 		deletePlayer: function(player){
 			delete this.players[player];
-			console.log(player + " deleted");
 		},
 		updatePlayers: function(player){
 			this.players[player.name].pos = player.pos;

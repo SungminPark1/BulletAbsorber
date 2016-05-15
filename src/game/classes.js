@@ -81,7 +81,7 @@ var createFighter = function(name, x, y, color) {
 			if(this.energy < this.skill1Cost){
 			}
 			else{
-				enemy.hp -= this.maxDamage;
+				enemy.hp -= this.minDamage;
 
 				if(enemy.hp <= 0){
 					this.hp = Math.min(this.hp + (this.maxHp*.1), this.maxHp);
@@ -99,10 +99,16 @@ var createFighter = function(name, x, y, color) {
 			if(this.energy < this.skill2Cost){
 			}
 			else{
-				enemy.hp -= (this.maxDamage + (this.energy)) * (this.energy/6);
+				enemy.hp -= ((this.maxDamage) + (this.energy)) * (this.energy/6.5);
+
+				if(enemy.hp < 0){
+					this.hp += -(this.maxHp * .2);
+				}
+
 
 				this.energy = 0;
 			}
+
 			this.skill2Used = false;
 		},
 
@@ -337,6 +343,7 @@ var createSupplier = function(name, x, y, color) {
 
 		energyRegen: .02,
 		energyRegenCap: .5,
+		damageOverTime: .1,
 		skill2Cost: 0,
 		skill2Used: false,
 		skill2: function(players, arrayBullets, enemy){
@@ -353,6 +360,7 @@ var createSupplier = function(name, x, y, color) {
 					}
 				}
 
+				enemy.hp -= this.damageOverTime;
 				this.energy -= .1;
 			}
 		},
@@ -384,6 +392,8 @@ var createSupplier = function(name, x, y, color) {
 
 			this.energyRegen =  Math.min((this.energyRegen + .02), this.energyRegenCap);
 
+			this.damageOverTime += .01;
+
 			this.currentExp = 0;
 			this.exp += 10;
 		}
@@ -409,7 +419,7 @@ var createAura = function(name, x, y ,color) {
 		reviveTime: 1200,
 		level: 1,
 
-		hp: 1,
+		hp: 10,
 		maxHp: 10,
 
 		energy: 0,
@@ -497,7 +507,7 @@ var createAura = function(name, x, y ,color) {
 
 			this.hpRegen = Math.min((this.hpRegen + .01), this.hpRegenCap);
 
-			this.damageOverTime += .1;
+			this.damageOverTime += .05;
 
 			this.currentExp = 0;
 			this.exp += 10;
