@@ -11,14 +11,26 @@ block body
           a(class="navi" href="/logout") Logout
         a(class="navi" href="/") Game
         a(class="navi" href="/highscore") Score Board
-
     section#record
-      if !record || record.length == 0
+      if !records || records.length == 0
         div.record
           h3 No Records Yet
       else
-        each val in record
+        each val in records
+          h2 Date: #{val.createdDate}
           div.record
-            p.date Date: #{val.createdDate}
-            p.user User: #{val.user}
-            p.score Score: #{val.score}
+            h3.right2 Party Info
+            h3 User: #{val.user}
+            div#left
+              p Type: #{val.type}
+              p Level: #{val.level}
+              p MaxHp: #{val.maxHp}
+              p Max Energy: #{val.maxEnergy}
+              p Min Damage: #{val.minDamage}
+              p Max Damage: #{val.maxDamage}
+              p Deaths: #{val.deaths}
+            div#right
+              p Party Size: #{val.partySize}
+              p Party Deaths: #{val.partyDeaths}
+              p Enemies Killed: #{val.enemiesKilled}
+            div.clear

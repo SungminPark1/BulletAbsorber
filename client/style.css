@@ -54,6 +54,14 @@ h2{
 	color: #5AD8E0;
 }
 
+h3{
+	font-size: 18px;
+	margin-top: 2%;
+	margin-bottom: 1%;
+	margin-left: 2%;
+	color: #5AD8E0;
+}
+
 p, div{
 	font-size: 17px;
 	margin-top: 2%;
@@ -72,6 +80,10 @@ a{
 	transition: background-color .5s ; 
 }
 
+a:hover{
+	background-color: #576775;
+}
+
 input{
 	margin: 0 1%;
 	padding: 1%;
@@ -85,22 +97,7 @@ div.navi{
 	margin-left: auto;
 	padding: 2% 2%;
 	background-color: #141F28;
-	width: 640px;
-}
-
-a.navi{
-}
-
-a.navi:visited{
-
-}
-
-a.navi:hover{
-	background-color: #576775;
-}
-
-a.navi:active{
-
+	width: 630px;
 }
 
 #login{
@@ -113,6 +110,12 @@ a.navi:active{
 	margin: 0;
 	float: right;
 	width: 300px;
+}
+
+.clear{
+	padding: 0%;
+	margin: 0%;
+	clear: both;
 }
 
 #user{
@@ -164,7 +167,9 @@ canvas{
 	top: 50%;
 }
 
+/* Not really yet :/ */
 #instructions{
+	display: none;
 	top: 60%;
 }
 
@@ -176,9 +181,10 @@ canvas{
 	background-color: #ddd;
 }
 
-/* Game Page Score Box */
+/* Player Record / Score Board Record */
 #score , #noScore{
 	width: 75%;
+	min-width: 635px;
 	padding-left: 8px;
 	padding-right: 8px;
 	padding-top: 1px;
@@ -189,14 +195,58 @@ canvas{
 	margin-left: auto;
 }
 
-/* Player Record / Score Board Record */
+h2.right{
+	font-size: 18px;
+	margin: 0% 2%;
+	margin-top: 3%;
+	width: 44%;
+	float: right;
+}
+
+h3.right{
+	margin: 0% 2%;
+	width: 44%;
+	float: right;
+}
+
+h3.right2{
+	margin: 2% 2%;
+	width: 44%;
+	float: right;
+}
+
+div#left, div#right{
+	background-color: #1C2B38;
+	padding: 2%;
+	margin: 1% 2%;
+	width: 40%;
+	border-width: 2px;
+    border-style: solid;
+    border-color: #576775;
+}
+
+div#left{
+	margin: 0% 2%;
+	float: left;
+}
+
+div#right{
+	margin: 0% 2%;
+	float: right;
+}
+
+#submitScore{
+	margin-top: 4%;
+	margin-right: 2%;
+	float: right;
+}
 
 .record{
 	width: 75%;
 	padding-left: 8px;
 	padding-right: 8px;
 	padding-top: 1px;
-	padding-bottom: 1px;
+	padding-bottom: 1%;
 	margin-top: 1%;
 	background-color: #141F28;
 	margin-right: auto;

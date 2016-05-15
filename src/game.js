@@ -8,6 +8,7 @@ var classes = require('./game/classes.js');
 function createGame(data){
 	var game = {
 		room: data,
+		ended: false,
 		started: false,
 		players: {},
 		enemy: null,
@@ -192,8 +193,18 @@ function createGame(data){
 					this.enemy.updateEnemy(this.dt);
 					this.arrayBullets = this.enemy.arrayBullets;
 
-
 					this.checkCollision();
+
+					// check if game should continue
+					var numDead = 0;
+					var keys = Object.keys(this.players);
+					for(var i = 0; i< keys.length; i++){
+						if(this.players[keys[i]].alive === false) numDead++;
+					}
+					if(numDead == keys.length){
+						this.ended = true;
+						this.started = false;
+					}
 
 					// remove bullets that are out of bound
 					this.arrayBullets = this.arrayBullets.filter(function(bullet){

@@ -34,15 +34,14 @@ $(document).ready(function() {
         return false;
     });
 
-    $("#recordSubmit").on("click", function(e) {
+     $("#submitScore").on("click", function(e) {
         e.preventDefault();
-    	
-        sendAjax($("#recordForm").attr("action"), $("#recordForm").serialize());
-
-        $("#success").html("success");
+        
+        sendAjax($("#submitScore").attr("action"), $("#loginForm").serialize());
 
         return false;
     });
+
 
     $("#signupSubmit").on("click", function(e) {
         e.preventDefault();

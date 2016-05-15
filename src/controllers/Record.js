@@ -10,15 +10,28 @@ var recordPage = function(req, res){
 			return res.status(400).json({error: "An error occurred"});
 		}
 
-		res.render('record', {record: docs});
+		res.render('record', {records: docs});
 	});
 };
 
 var addRecord = function(req, res){
 
+	console.log('rarw');
+
 	var recordData = {
 		user: req.session.account.username,
-		score: req.body.score
+		type: req.body.type,
+		level: req.body.level,
+		maxHp: req.body.maxHp,
+		maxEnergy: req.body.maxEnergy,
+		minDamage: req.body.minDamage,
+		maxDamage: req.body.maxDamage,
+		deaths: req.body.deaths,
+		partySize: req.body.partySize,
+		partyLevel: req.body.partyLevel,
+		partyDeaths: req.body.partyDeaths,
+		enemiesKilled: req.body.enemiesKilled,
+		createdDate: req.body.date
 	};
 
 	var newRecord = new Record.RecordModel(recordData);
@@ -30,6 +43,8 @@ var addRecord = function(req, res){
 		}
 		console.log('successfully recored data');
 	});
+
+	res.json({success: '/'});
 };
 
 var highScorePage = function(req, res){
@@ -38,10 +53,6 @@ var highScorePage = function(req, res){
         if(err) {
             return res.json({err:err}); //if error, return it 
         }
-
-        docs.sort(function(a,b){
-        	return  b.score - a.score;
-        });
 
         //return success
         if(req.session.account){	

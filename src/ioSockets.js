@@ -61,10 +61,6 @@ var onMsg = function(socket, io) {
 		}
 	});
 
-	socket.on('changeReady', function(data){
-
-	});
-
 	socket.on('updatePlayer', function(data){
 		gameRooms[socket.room].updatePlayers(data);
 	});
@@ -115,6 +111,18 @@ var onMsg = function(socket, io) {
 			io.sockets.in(room).emit('updateGameLobby', {
 				players: gameRooms[room].players,
 			});
+		}
+
+		if(gameRooms[room].ended === true){
+			io.sockets.in(room).emit('gameEnded', {
+				players: gameRooms[room].players,
+				enemiesKilled: gameRooms[room].enemiesKilled,
+				date: new Date()
+			});
+
+			//reset some values
+			gameRooms[room].ended = false;
+			gameRooms[room].enemiesKilled = 0;
 		}
 	}
 };

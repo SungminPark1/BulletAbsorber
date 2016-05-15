@@ -22,6 +22,7 @@ block body
           p#user Welcome, #{user}
           a(class="navi" href="/record") Your Records
           a(class="navi" href="/logout") Logout
+          input(type="hidden", name="_csrf", value="#{csrfToken}")
         a(class="navi" href="/") Game
         a(class="navi" href="/highscore") Score Board
     .canvasDiv
@@ -30,7 +31,8 @@ block body
       button#joinRoom Join Room
       button#instructions Instructions
       div#gameInfoBox
-   div#score
+    h2 Current Session Score
+    div#score
 
 block scripts
   script(src="/socket.io/socket.io.js")

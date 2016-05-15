@@ -409,7 +409,7 @@ var createAura = function(name, x, y ,color) {
 		reviveTime: 1200,
 		level: 1,
 
-		hp: 10,
+		hp: 1,
 		maxHp: 10,
 
 		energy: 0,

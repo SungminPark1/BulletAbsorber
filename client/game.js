@@ -21,7 +21,7 @@
 	var viewControls = true;
 	var previousSkillButtonDown = false;
 	var playerType = 0;
-
+	var _csrf;
 	function init() {
 		socket = io.connect();
 		canvas = document.querySelector('canvas');
@@ -46,6 +46,9 @@
 		setupUI();
 		setupSocket();
 		draw();
+
+		_csrf = $("input").attr("value");
+
 	}
 
 	function setupUI(){
@@ -53,7 +56,7 @@
 		if(user.name == ''){
 			user.name = "Guest " + Math.floor(Math.random()*1000);
 
-			var divString = '<h2>Current Session Score</h2>';
+			var divString = '';
 			divString += '<p>Login to be able to submit score</p>';
 
 			document.querySelector('#score').innerHTML = divString;
@@ -61,7 +64,7 @@
 		else{
 			hasAccount = true;
 
-			var divString = '<h2>Current Session Score</h2>';
+			var divString = '';
 			divString += '<p>No record yet</p>';
 			divString += '<p>Record will show after a game session ends</p>';
 
@@ -142,9 +145,6 @@
 				document.querySelector('#gameInfoBox').style.zIndex = -1;
 			};	
 		};
-
-		highScore = 0;
-		currentScore = 0;
 	}
 
 	// sets up the socket
@@ -204,15 +204,100 @@
 		});
 
 		socket.on('gameEnded', function(data){
-			sessionRecord = data;
+			started = false;
+			// record party size, player name, player lvl, class, min~max damage, death num, max hp, max energy, enemy killed,
+			var keys = Object.keys(data.players);
+			sessionRecord.partyLevel = 0;
+			sessionRecord.partyDeaths = 0;
+
+			for(var i = 0; i < keys.length; i++){
+				if(keys[i] == user.name){
+					var player = players[keys[i]];
+
+					sessionRecord.size = keys.length;
+					sessionRecord.name = player.name;
+					sessionRecord.level = player.level;
+					sessionRecord.type = player.type;
+					sessionRecord.maxHp = player.maxHp;
+					sessionRecord.maxEnergy = player.maxEnergy;
+					sessionRecord.minDamage = player.minDamage;
+					sessionRecord.maxDamage = player.maxDamage;
+					sessionRecord.deaths = (player.reviveTime -1200)/600;
+					sessionRecord.enemiesKilled = data.enemiesKilled;
+
+				}
+				sessionRecord.partyLevel += players[keys[i]].level;
+				sessionRecord.partyDeaths += (players[keys[i]].reviveTime -1200)/600;
+				console.log(data);
+				sessionRecord.date = data.date;
+			}
 
 			// if not a guest change div score to show score to see if they want to submit it
 			if(hasAccount === true){
-				// record party size, player lvl, class, min~max damage, death num, max hp, max energy, enemy killed,
 
-				var divString = '<h2>Current Session Score</h2>';
+				var divString = '<h2>' + sessionRecord.date + '</h2>';
+				divString += '';
 				divString += '<div id="recordData">';
-				divString += '<p></p>';
+					divString += '<h3 class="right">Party Info</h3>';
+					divString += '<h3>Player Name: ' + sessionRecord.name + '</h3>';
+
+					divString += '<div id="left">';
+						divString += '<p>Class: ' + sessionRecord.type + '</p>';
+						divString += '<p>Level: ' + sessionRecord.level + '</p>';
+						divString += '<p>Max Hp: ' + sessionRecord.maxHp + '</p>';
+						divString += '<p>Max Energy: ' + sessionRecord.maxEnergy + '</p>';
+						divString += '<p>Damage: ' + sessionRecord.minDamage + '~' + sessionRecord.maxDamage + '</p>';
+						divString += '<p>Death Count: ' + sessionRecord.deaths + '</p>';
+					divString += '</div>';
+
+					divString += '<div id="right">';
+						divString += '<p>Party Size: ' + sessionRecord.size + '</p>';
+						divString += '<p>Party\'s Average Level: ' + Math.round(sessionRecord.partyLevel/sessionRecord.size) + '</p>';
+						divString += '<p>Party Death Count: ' + sessionRecord.partyDeaths + '</p>';
+						divString += '<p>Enemies Killed: ' + sessionRecord.enemiesKilled + '</p></div">';
+					divString += '</div>';
+
+					divString += '<button id="submitScore" action="/record">Submit</button>'
+					divString += '<div class="clear"></div>';
+
+				divString += '</div">';
+
+				document.querySelector('#score').innerHTML = divString;
+				document.querySelector('#submitScore').style.display = 'block';
+
+				document.querySelector('#submitScore').onclick = function(e){
+					var dataString = 'type=' + sessionRecord.type;
+					dataString += '&level=' + sessionRecord.level;
+					dataString += '&maxHp=' + sessionRecord.maxHp;
+					dataString += '&maxEnergy=' + sessionRecord.maxEnergy;
+					dataString += '&minDamage=' + sessionRecord.minDamage;
+					dataString += '&maxDamage=' + sessionRecord.maxDamage;
+					dataString += '&deaths=' + sessionRecord.deaths;
+					dataString += '&partySize=' + sessionRecord.size;
+					dataString += '&partyLevel=' + Math.round(sessionRecord.partyLevel/sessionRecord.size);
+					dataString += '&partyDeaths=' + sessionRecord.partyDeaths;
+					dataString += '&enemiesKilled=' + sessionRecord.enemiesKilled;
+					dataString += '&date=' + sessionRecord.date;
+					dataString += '&_csrf=' + _csrf;
+
+					$.ajax({
+			            cache: false,
+			            type: "POST",
+			            url: $("#submitScore").attr("action"),
+			            data: dataString,
+			            dataType: "json",
+			            success: function(result, status, xhr) {
+			            	if(result.success != null){
+			                	document.querySelector('#submitScore').style.display = 'none';
+			        			document.querySelector('#score').innerHTML += "<p>success!</p>";
+			                }
+			            },
+			            error: function(xhr, status, error) {
+			                document.querySelector('#submitScore').innerHTML = 'An error Occured';
+		            	}
+        			});  
+				};
+				
 			}
 		});
 	}
@@ -838,7 +923,6 @@
 					ctx.textBaseline = "middle";
 					ctx.fillRect(2+ i * 159,460, 159, 178);
 					ctx.strokeRect(2+ i * 159,460, 159, 178);
-					console.log(drawCall.ready);
 					// class Name
 					if( drawCall.type == 0) fillText(ctx, "Fighter", 79 + i * 159 , 490, "15pt courier", "#ddd");
 					else if( drawCall.type == 1) fillText(ctx, "Bomber", 79 + i * 159 , 490, "15pt courier", "#ddd");
