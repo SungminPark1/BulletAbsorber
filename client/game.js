@@ -71,14 +71,17 @@
 			document.querySelector('#score').innerHTML = divString;
 		}
 
+		// create room info box
 		document.querySelector('#createRoom').onclick = function(e){
 
 			document.querySelector('#gameInfoBox').style.zIndex = 1;
 
-			var divString = '<h1>Enter Room Name</h1>';
+			var divString = '<h1 class="white">Create Room</h1>';
 			divString += '<input id="roomName" type="text" placeholder="Room Name"></input>';
+			divString += '<div>';
 			divString += '<button id="submitCreateRoom">Create Room</button>';
-			divString += '<button id="back">Back</button>';
+			divString += '<button id="back">Back</button></div>';
+			divString += '<p id="roomError"></p>';
 			document.querySelector('#gameInfoBox').innerHTML = divString;
 
 
@@ -98,17 +101,20 @@
 						}
 					});
 				}
-				document.querySelector('#gameInfoBox').style.zIndex = -1;
+				else document.querySelector('#roomError').innerHTML = 'Please enter a valid room name.';
 			};			
 		};
 
+		// join room info box
 		document.querySelector('#joinRoom').onclick = function(e){
 			document.querySelector('#gameInfoBox').style.zIndex = 1;
 
-			var divString = '<h1>Enter Room Name</h1>';
+			var divString = '<h1 class="white">Join Room</h1>';
 			divString += '<input id="roomName" type="text" placeholder="Room Name"></input>';
+			divString += '<div>';
 			divString += '<button id="submitJoinRoom">Join Room</button>';
-			divString += '<button id="back">Back</button>';
+			divString += '<button id="back">Back</button></div>';
+			divString += '<p id="roomError"></p>';
 			document.querySelector('#gameInfoBox').innerHTML = divString;
 
 			//back to menu
@@ -116,25 +122,10 @@
 				document.querySelector('#gameInfoBox').style.zIndex = -1;
 			};
 
-			// create the room
+			// join the room
 			document.querySelector('#submitJoinRoom').onclick = function(e){
 				var roomName = document.querySelector('#roomName').value;
-				if(roomName != ''){
-					var pos = {
-						x: Math.random()*600+20,
-						y: Math.random()*600+20,
-					};
-
-					var color = {
-						r: 255,
-						g: 0,
-						b: 0
-					};
-
-					user.pos = pos;
-					user.color = color;
-
-					
+				if(roomName != ''){					
 					socket.emit('joinRoom', {
 						room: roomName,
 						player: {
@@ -142,7 +133,7 @@
 						}
 					});
 				}
-				document.querySelector('#gameInfoBox').style.zIndex = -1;
+				else document.querySelector('#roomError').innerHTML = 'Please enter a valid room name.';
 			};	
 		};
 	}
@@ -153,22 +144,9 @@
 			name: user.name
 		});
 
-		// updates player movements & bullets
-		socket.on('updateGame', function(data){
-			players = data.players;
-			arrayBullets = data.arrayBullets;
-			enemy = {
-				hp: data.enemyHp,
-				maxHp: data.enemyMaxHp,
-				damage: data.enemyDamage,
-				name: data.enemyName,
-				currentAttackDur: data.enemyCurrentAttackDur,
-				attackDur: data.enemyAttackDur,
-				currentRestDur: data.enemyCurrentRestDur,
-				restDur: data.enemyRestDur
-			};
-
-			update(data.dt);
+		// if there is a error joinning a room
+		socket.on('roomError', function(data){
+			document.querySelector('#roomError').innerHTML = data.msg;
 		});
 
 		// update game lobby
@@ -200,11 +178,31 @@
 			for(var i = 0; i < keys.length; i++){
 				if(keys[i] == user.name)user = players[keys[i]];
 			}
+			document.querySelector('#gameInfoBox').style.zIndex = -1;
 			document.querySelector('#createRoom').style.visibility = 'hidden';
 			document.querySelector('#joinRoom').style.visibility = 'hidden';
 			draw();
 		});
 
+		// updates player movements & bullets
+		socket.on('updateGame', function(data){
+			players = data.players;
+			arrayBullets = data.arrayBullets;
+			enemy = {
+				hp: data.enemyHp,
+				maxHp: data.enemyMaxHp,
+				damage: data.enemyDamage,
+				name: data.enemyName,
+				currentAttackDur: data.enemyCurrentAttackDur,
+				attackDur: data.enemyAttackDur,
+				currentRestDur: data.enemyCurrentRestDur,
+				restDur: data.enemyRestDur
+			};
+
+			update(data.dt);
+		});
+
+		// when game ends
 		socket.on('gameEnded', function(data){
 			started = false;
 			// record party size, player name, player lvl, class, min~max damage, death num, max hp, max energy, enemy killed,

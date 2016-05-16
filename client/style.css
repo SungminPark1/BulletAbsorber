@@ -85,7 +85,7 @@ a:hover{
 }
 
 input{
-	margin: 0 1%;
+	margin: 1% 1%;
 	padding: 1%;
 }
 
@@ -93,6 +93,7 @@ img{
 	margin: 2%;
 	width: 96%;
 }
+
 /* Navi bar */
 
 div.navi{
@@ -140,6 +141,10 @@ canvas{
 	padding: 0%;
 }
 
+.white{
+	color: #ddd;
+}
+
 #createRoom, #joinRoom{
 	margin: 0px auto;
 	border: 2px solid #ddd;
@@ -165,13 +170,33 @@ canvas{
 	top: 40%;
 	height: 30%;
 	z-index: -2;
+	text-align: center;
+}
+
+#roomName{
+	border: 2px solid #ddd;
+	background-color: black;
+	color: #ddd;
+	padding: 5px 15px;
+}
+
+#submitCreateRoom, #submitJoinRoom, #back{
+	background-color: black;
+	border: 2px solid #ddd;
+	color: #ddd;
+	margin: 0% 2%;
+	padding: 2%;
+}
+
+#roomError{
+	color: red;
 }
 
 #joinRoom{
 	top: 50%;
 }
 
-#createRoom:hover, #joinRoom:hover{
+#createRoom:hover, #joinRoom:hover , #submitCreateRoom:hover, #submitJoinRoom:hover, #back:hover{
 	border-color: red;
 }
 

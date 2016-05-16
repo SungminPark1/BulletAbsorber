@@ -30,7 +30,9 @@ var onMsg = function(socket, io) {
 			});
 		}
 		else{
-			console.log('room already exists');
+			socket.emit('roomError', {
+				msg: 'Room: ' + data.room + ' already exisits.'
+			})
 		}
 	});
 
@@ -52,12 +54,16 @@ var onMsg = function(socket, io) {
 				});
 			}
 			else{
-				console.log(data.roomName + "Is Full or already started")
+				socket.emit('roomError', {
+					msg: 'Room: ' + data.room + ' is full or already started the game.'
+				});
 			}
 		}
 		else{
 			// send error message
-			console.log(data.roomName + ' does not exist');
+			socket.emit('roomError', {
+				msg: 'Room: ' + data.room + ' does not exist.'
+			});
 		}
 	});
 
