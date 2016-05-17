@@ -79,7 +79,7 @@ function createGame(data){
 			}
 
 			this.enemy = enemies.createEnemy(1,1, 1);
-			this.enemy.attackPattern = Math.floor(Math.random()*3);
+			this.enemy.attackPattern = Math.floor(Math.random()*5);
 
 			this.started = true;
 		},
@@ -185,7 +185,7 @@ function createGame(data){
 					}
 					// Scale enemy based on player's level
 					this.enemy = enemies.createEnemy(1,enemyLevel, playerNum);
-					this.enemy.attackPattern = Math.floor(Math.random()*3);
+					this.enemy.attackPattern = Math.floor(Math.random()*5);
 				}
 				else{
 
@@ -204,11 +204,6 @@ function createGame(data){
 						this.ended = true;
 						this.started = false;
 					}
-
-					// remove bullets that are out of bound
-					this.arrayBullets = this.arrayBullets.filter(function(bullet){
-						return bullet.active;
-					});
 				}
 			}
 			else{
