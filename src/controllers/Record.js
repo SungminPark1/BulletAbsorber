@@ -54,6 +54,10 @@ var highScorePage = function(req, res){
             return res.json({err:err}); //if error, return it 
         }
 
+         docs.sort(function(a,b){
+        	return  b.enemiesKilled - a.enemiesKilled;
+        });
+
         //return success
         if(req.session.account){	
         	return res.render('highscore', {csrfToken: req.csrfToken(), user: req.session.account.username, records: docs}); 
