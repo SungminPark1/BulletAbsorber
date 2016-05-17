@@ -512,7 +512,7 @@
 		if(isLobby === true){
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
-			fillText(ctx, "Title", 640/2, 640/2 - 200, "50pt courier", "#ddd");
+			fillText(ctx, "Bullet Absorbers", 640/2, 640/2 - 200, "50pt courier", "#ddd");
 
 			ctx.textAlign = "left";
 

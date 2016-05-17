@@ -20,7 +20,7 @@
 
 		h2{
 			color: #5AD8E0;
-			margin-top: 5%;
+			margin-top: 4%;
 			margin-bottom: 0%;
 		}
 
@@ -111,10 +111,10 @@
 
 					<h2>Controls</h2>
 					<p>
-						wasd / arrowkeys - movement in Game<br>
-						shift - reduce movement speed<br>
-						j / z - confirm / basic attack<br>
-						k,l / x,c - special abilites<br>
+						WASD - movement in Game<br>
+						Shift - reduce movement speed<br>
+						J- confirm / basic attack<br>
+						K,L - special abilites<br>
 					</p>
 					
 				</article>
@@ -128,6 +128,9 @@
 						</li>
 						<li>
 							<p>Players can interact with each other with abillites</p>
+						</li>
+						<li>
+							<p>Players compare scores on a highscore page</p>
 						</li>
 					</ul>
 
@@ -152,6 +155,9 @@
 						<li>
 							<p>Run an enemy bullet script</p>
 						</li>
+						<li>
+							<p>Record and store session scores (only players with an account)</p>
+						</li>
 					</ul>
 
 					<h3>Libraries</h3>
@@ -159,17 +165,57 @@
 						<li>
 							<p>VictorJS</p>
 						</li>
-						<li>
-							<p>SoundJS</p>
-						</li>
-						<li>
-							<p>PreloadJS</p>
-						</li>
 					</ul>
 				</article>
+
 				<p id="bottom"></p>
+
 				<article class="wide">
-					<h2>UI Mock Up</h2>
+					<h2>Post-Mortem</h2>
+					<h3>Things that Worked</h3>
+					<p>
+						I was able to get most of what I wanted into the app and was also able to incorporate my MVC mini project
+						into this project to allow players to compare scores with other users.
+					</p>
+
+					<h3>Things that Didn't Work</h3>
+					<p>
+						Although most of what I wanted was put into the project. I didn't have a lot of time to optimize the game much.
+						Since I am using setInterval for the game rooms each room runs asynchronously. But each room still seems to effect
+						each others framerate slightly.
+					</p>
+					<p>
+						I wasn't able to put in a grid collision detection so all bullets check collision with the each players. I could
+						aslo try to organize the data that is emited to the clients to speed up the time as well. Even without this optimizations
+						the framerate generally sits around 50~40 frames when theres a low bullet count. Frames drop to about 35~25 frames when theres a high
+						bullet count.
+					</p>
+					<p>
+						Right now the highscore page only sorts the scores by the enemies killed. Instead of having it set to only 1 sort I would like to change it
+						so that players can change the sort by whatever they want. I would probably do this by having the server send the record to the views and have
+						a javascript file somehow access the records. Then with on onchange function an on drop down it would sort the record array.
+					</p>
+					<p>
+						Since the server is the one creating the enemy bullets I wasn't exactly sure how to do sound effects when the enemy spawns new bullets. Even if I had time I am not sure exactly
+						how I would get it to work. I would like to eventually add in sound to this project at a later time.
+					</p>
+
+					<h2>Most Interesting Part</h2>
+					<p>
+						The most interesting part for me was getting websockets to communicate the the client and the game's js files. I spent a lot of time trying
+						to get it to work. There was a time when the game js functions needed the socket to emit but it felt really roundabout and I spend time restructuring
+						the socketio and game files. I think the way I have it right now works decently. This was probably also the most frustrating part of the project. Many
+						times the client and server's data would constantly override each other. For example if a player moved they users position would switch between the new
+						position the client sent to the server and the old position the server sent to the client. This doesn't visible happen locally so it was extremely time
+						consuming to try and fix. As of right now the client mainly controls the position of the player to prevent the studdering.
+					</p>
+
+					<h2>Architecture</h2>
+					<img src="architecture.png" alt="architecture" />
+				</article>
+
+				<article class="wide">
+					<h2>Game UI</h2>
 					<h3>Title Screen</h3>
 					<img src="title.png" alt="Website of Title" />
 					<h3>Room Screen</h3>
